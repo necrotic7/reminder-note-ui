@@ -6,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig(({ mode }) => {
   // 讀取 .env 檔
   const env = loadEnv(mode, process.cwd())
-
   return {
     plugins: [react(), tailwindcss()],
     server: {
