@@ -53,6 +53,7 @@ export default function MainLayout() {
           <li><Link to="/about">ℹ️ 關於</Link></li>
         </ul>
       </div>
+      <div className="toast toast-top toast-end" id="toast-container"></div>
     </div>
   )
 }

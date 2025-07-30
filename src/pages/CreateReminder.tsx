@@ -1,19 +1,24 @@
 import { useEffect, useState } from "react";
-import { EnumReminderFrequency } from "../consts/reminder";
+import { EnumReminderFrequency, EnumReminderFrequencyName } from "../consts/reminder";
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
+import { FormHelper } from "../tools/form";
+import { DaySelect, MonthSelect } from "../components/Date";
+import { CreateReminderApi } from "../apis/reminders";
 
 export default function CreateReminder() {
-    const [form, setForm] = useState({
-        title: '',
-        content: '',
-        frequency: '',
-        time: '',
-        weekday: '',
-        date: '',
-        month: '',
-        year: '',
-        fullDate: null as Date | null
+    const { form, setForm, setField } = FormHelper({
+            title: '',
+            content: '',
+            frequency: '',
+            time: '',
+            hour: 0,
+            minute: 0,
+            weekday: 0,
+            date: 0,
+            month: 0,
+            year: 0,
+            fullDate: null as Date | null
     })
 
     // 提醒頻率更動時，清空所有跟頻率相關的欄位
@@ -21,17 +26,13 @@ export default function CreateReminder() {
         setForm(prev => ({
             ...prev,
             time: '',
-            year: '',
-            month: '',
-            date: '',
-            weekday: '',
+            year: 0,
+            month: 0,
+            date: 0,
+            weekday: 0,
             fullDate: null,
         }))
     }, [form.frequency])
-
-    const updateField = (key: keyof typeof form, value: any) => {
-        setForm(prev => ({ ...prev, [key]: value }))
-    }
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -39,6 +40,7 @@ export default function CreateReminder() {
         const payload = { userId: lineId, ...form }
         console.log('要送出的資料：', payload)
         // TODO 請求reminder-note-api
+        await CreateReminderApi(payload);
     }
 
     return (
@@ -51,7 +53,7 @@ export default function CreateReminder() {
                     type="text"
                     className="input input-bordered"
                     value={form.title}
-                    onChange={(e) => updateField('title', e.target.value)}
+                    onChange={(e) => setField('title', e.target.value)}
                     required
                 />
 
@@ -59,7 +61,7 @@ export default function CreateReminder() {
                 <textarea
                     className="textarea textarea-bordered"
                     value={form.content}
-                    onChange={(e) => updateField('content', e.target.value)}
+                    onChange={(e) => setField('content', e.target.value)}
                     required
                 />
 
@@ -67,15 +69,13 @@ export default function CreateReminder() {
                 <select
                     className="select select-bordered"
                     value={form.frequency}
-                    onChange={(e) => updateField('frequency', e.target.value)}
+                    onChange={(e) => setField('frequency', e.target.value)}
                     required
                 >
                     <option disabled value="">請選擇頻率</option>
-                    <option value={EnumReminderFrequency.Once}>單次</option>
-                    <option value={EnumReminderFrequency.Daily}>每日</option>
-                    <option value={EnumReminderFrequency.Weekly}>每週</option>
-                    <option value={EnumReminderFrequency.Monthly}>每月</option>
-                    <option value={EnumReminderFrequency.Annually}>每年</option>
+                    {Object.entries(EnumReminderFrequencyName).map(([key, val]) => 
+                        (<option value={key}>{val}</option>)
+                    )}
                 </select>
 
                 {/* 時間欄位 */}
@@ -86,7 +86,12 @@ export default function CreateReminder() {
                             type="time"
                             className="input input-bordered"
                             value={form.time}
-                            onChange={(e) => updateField('time', e.target.value)}
+                            onChange={(e) => {
+                                setField('time', e.target.value)
+                                const [hr, min] = e.target.value.split(':')
+                                setField('hour', Number(hr))
+                                setField('minute', Number(min))
+                            }}
                             required
                         />
                     </>
@@ -99,11 +104,11 @@ export default function CreateReminder() {
                         <DatePicker
                             selected={form.fullDate}
                             onChange={(date) => {
-                                updateField('fullDate', date)
+                                setField('fullDate', date)
                                 if (date) {
-                                    updateField('year', String(date.getFullYear()))
-                                    updateField('month', String(date.getMonth() + 1))
-                                    updateField('date', String(date.getDate()))
+                                    setField('year', date.getFullYear())
+                                    setField('month', date.getMonth() + 1)
+                                    setField('date', date.getDate())
                                 }
                             }}
                             dateFormat="yyyy-MM-dd"
@@ -119,12 +124,12 @@ export default function CreateReminder() {
                         <select
                             className="select select-bordered"
                             value={form.weekday}
-                            onChange={(e) => updateField('weekday', e.target.value)}
+                            onChange={(e) => setField('weekday', e.target.value)}
                             required
                         >
                             <option disabled value="">請選擇星期</option>
                             {[...Array(7)].map((_, i) => (
-                                <option key={i} value={String(i)}>{`星期${'日一二三四五六'[i]}`}</option>
+                                <option key={i} value={i}>{`星期${'日一二三四五六'[i]}`}</option>
                             ))}
                         </select>
                     </>
@@ -133,15 +138,15 @@ export default function CreateReminder() {
                 {form.frequency === EnumReminderFrequency.Monthly && (
                     <>
                         <label className="label">提醒日期</label>
-                        <DaySelect value={form.date} onChange={(val) => updateField('date', val)} />
+                        <DaySelect value={String(form.date)} onChange={(val) => setField('date', val)} />
                     </>
                 )}
 
                 {form.frequency === EnumReminderFrequency.Annually && (
                     <>
                         <label className="label">提醒日期</label>
-                        <MonthSelect value={form.month} onChange={(val) => updateField('month', val)} />
-                        <DaySelect value={form.date} onChange={(val) => updateField('date', val)} />
+                        <MonthSelect value={String(form.month)} onChange={(val) => setField('month', val)} />
+                        <DaySelect value={String(form.date)} onChange={(val) => setField('date', val)} />
                     </>
                 )}
 
@@ -150,21 +155,3 @@ export default function CreateReminder() {
         </form>
     )
 }
-
-const DaySelect = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => (
-    <select className="select select-bordered w-full" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option disabled value="">選擇日期</option>
-        {[...Array(31)].map((_, i) => (
-            <option key={i} value={String(i + 1)}>{i + 1} 日</option>
-        ))}
-    </select>
-)
-
-const MonthSelect = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => (
-    <select className="select select-bordered w-full" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option disabled value="">選擇月份</option>
-        {[...Array(12)].map((_, i) => (
-            <option key={i} value={String(i + 1)}>{i + 1} 月</option>
-        ))}
-    </select>
-)
