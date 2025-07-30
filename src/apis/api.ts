@@ -28,3 +28,24 @@ export function showErrorToast(message: string) {
 
   container.appendChild(toast)
 }
+
+export function showSuccessToast(message: string) {
+  const container = document.getElementById('toast-container')
+  if (!container) return
+
+  const toast = document.createElement('div')
+  toast.className = `alert alert-success shadow-lg flex justify-between items-center gap-2`
+
+  const span = document.createElement('span')
+  span.textContent = message
+
+  const btn = document.createElement('button')
+  btn.className = 'btn btn-sm btn-circle btn-ghost text-lg'
+  btn.innerHTML = '&times;'
+  btn.onclick = () => toast.remove()
+
+  toast.appendChild(span)
+  toast.appendChild(btn)
+
+  container.appendChild(toast)
+}

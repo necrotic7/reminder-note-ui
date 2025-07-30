@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EnumReminderFrequency, EnumReminderFrequencyName } from "../consts/reminder";
+import { CreateReminderForm, EnumReminderFrequency, EnumReminderFrequencyName } from "../types/reminders";
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
 import { FormHelper } from "../tools/form";
@@ -7,20 +7,8 @@ import { DaySelect, MonthSelect } from "../components/Date";
 import { CreateReminderApi } from "../apis/reminders";
 
 export default function CreateReminder() {
-    const { form, setForm, setField } = FormHelper({
-            title: '',
-            content: '',
-            frequency: '',
-            time: '',
-            hour: 0,
-            minute: 0,
-            weekday: 0,
-            date: 0,
-            month: 0,
-            year: 0,
-            fullDate: null as Date | null
-    })
-
+    let { form, setForm, setField } = FormHelper(new CreateReminderForm())
+    const [key, setKey] = useState(0)
     // 提醒頻率更動時，清空所有跟頻率相關的欄位
     useEffect(() => {
         setForm(prev => ({
@@ -37,15 +25,20 @@ export default function CreateReminder() {
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const lineId = localStorage.getItem('lineId')
-        const payload = { userId: lineId, ...form }
-        console.log('要送出的資料：', payload)
-        // TODO 請求reminder-note-api
-        await CreateReminderApi(payload);
+        form.userId = lineId ?? '';
+        // 請求reminder-note-api
+        const result = await CreateReminderApi(form);
+        if(result) {
+            // 清空表單
+            setForm(new CreateReminderForm())
+            setKey(prev => prev + 1)
+        }
     }
 
     return (
-        <form className="space-y-4" onSubmit={submit}>
-            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 mx-auto">
+        <div>
+        <form className="space-y-4" onSubmit={submit} key={key}>
+            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 mx-auto" >
                 <legend className="fieldset-legend">新增提醒</legend>
 
                 <label className="label">標題</label>
@@ -68,6 +61,7 @@ export default function CreateReminder() {
                 <label className="label">提醒頻率</label>
                 <select
                     className="select select-bordered"
+                    defaultValue={""}
                     value={form.frequency}
                     onChange={(e) => setField('frequency', e.target.value)}
                     required
@@ -153,5 +147,6 @@ export default function CreateReminder() {
                 <button type="submit" className="btn btn-neutral mt-4">送出</button>
             </fieldset>
         </form>
+        </div>
     )
 }
