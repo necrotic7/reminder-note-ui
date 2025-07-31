@@ -9,12 +9,12 @@ export async function CreateReminderApi(data: CreateReminderForm) {
             content: data.content,
             frequency: data.frequency,
             remindTime: {
-                hour: data.hour,
-                minute: data.minute,
-                weekday: data.weekday,
-                date: data.date,
-                month: data.month,
-                year: data.year,
+                hour: safeParseInt(data.hour),
+                minute: safeParseInt(data.minute),
+                weekday: safeParseInt(data.weekday),
+                date: safeParseInt(data.date),
+                month: safeParseInt(data.month),
+                year: safeParseInt(data.year),
             }
         }
         await ReminderNoteApi.post('/reminders', payload)
@@ -24,4 +24,8 @@ export async function CreateReminderApi(data: CreateReminderForm) {
         console.log(err)
         showErrorToast(`創建提醒失敗：${err?.response?.data?.message ?? err}`)
     }
+}
+
+function safeParseInt(val: any) {
+    return isNaN(parseInt(val)) ? 0 : parseInt(val)
 }

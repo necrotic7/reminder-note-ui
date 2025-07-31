@@ -4,12 +4,12 @@ export class CreateReminderForm {
     content: string;
     frequency: EnumReminderFrequency;
     time: string;
-    hour: number;
-    minute: number;
-    weekday: number;
-    date: number;
-    month: number;
-    year: number;
+    hour: string;
+    minute: string;
+    weekday: string;
+    date: string;
+    month: string;
+    year: string;
     fullDate: Date | null
 }
 

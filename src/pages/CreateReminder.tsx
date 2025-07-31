@@ -14,10 +14,10 @@ export default function CreateReminder() {
         setForm(prev => ({
             ...prev,
             time: '',
-            year: 0,
-            month: 0,
-            date: 0,
-            weekday: 0,
+            year: '',
+            month: '',
+            date: '',
+            weekday: '',
             fullDate: null,
         }))
     }, [form.frequency])
@@ -117,7 +117,7 @@ export default function CreateReminder() {
                         <label className="label">選擇星期</label>
                         <select
                             className="select select-bordered"
-                            value={form.weekday}
+                            value={form.weekday!}
                             onChange={(e) => setField('weekday', e.target.value)}
                             required
                         >
@@ -132,15 +132,20 @@ export default function CreateReminder() {
                 {form.frequency === EnumReminderFrequency.Monthly && (
                     <>
                         <label className="label">提醒日期</label>
-                        <DaySelect value={String(form.date)} onChange={(val) => setField('date', val)} />
+                        <DaySelect value={form.date} onChange={(val) => setField('date', val)} />
                     </>
                 )}
 
                 {form.frequency === EnumReminderFrequency.Annually && (
                     <>
                         <label className="label">提醒日期</label>
-                        <MonthSelect value={String(form.month)} onChange={(val) => setField('month', val)} />
-                        <DaySelect value={String(form.date)} onChange={(val) => setField('date', val)} />
+                        <MonthSelect value={form.month} onChange={(val) => setField('month', val)} />
+                        <select className="select select-bordered w-full" value={form.date!} onChange={(e) => setField('date', parseInt(e.target.value))}>
+                            <option disabled value="">選擇日期</option>
+                            {[...Array(31)].map((_, i) => (
+                                <option key={i} value={i + 1}>{i + 1} 日</option>
+                            ))}
+                        </select>
                     </>
                 )}
 
