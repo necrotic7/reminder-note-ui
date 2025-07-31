@@ -8,6 +8,8 @@ export const ReminderNoteApi = axios.create({
   },
 })
 
+const toastDuration = 5000;
+
 export function showErrorToast(message: string) {
   const container = document.getElementById('toast-container')
   if (!container) return
@@ -27,6 +29,10 @@ export function showErrorToast(message: string) {
   toast.appendChild(btn)
 
   container.appendChild(toast)
+
+  setTimeout(() => {
+    toast.remove()
+  }, toastDuration)
 }
 
 export function showSuccessToast(message: string) {
@@ -48,4 +54,8 @@ export function showSuccessToast(message: string) {
   toast.appendChild(btn)
 
   container.appendChild(toast)
+
+  setTimeout(() => {
+    toast.remove()
+  }, toastDuration)
 }
