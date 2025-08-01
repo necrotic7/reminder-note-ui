@@ -48,7 +48,7 @@ export default function MainLayout() {
       <div className="drawer-side">
         <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-64 p-4">
-          <li><Link to="/">🏠 首頁</Link></li>
+          <li><Link to="/home">🏠 首頁</Link></li>
           <li><Link to="/createReminder">📝 新增提醒</Link></li>
           <li><Link to="/about">ℹ️ 關於</Link></li>
         </ul>
