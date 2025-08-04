@@ -26,6 +26,20 @@ export async function CreateReminderApi(data: CreateReminderForm) {
     }
 }
 
+export async function GetUserReminders(userId: string) {
+    try{
+        const queryParams = new URLSearchParams();
+        queryParams.set('userId', userId)
+        const endpoint = `/reminders?${queryParams.toString()}`
+        const result = await ReminderNoteApi.get(endpoint)
+
+        return result;
+    } catch(err) {
+        console.log(err)
+        showErrorToast(`取得提醒失敗：${err?.response?.data?.message ?? err}`)
+    }
+}
+
 function safeParseInt(val: any) {
     return isNaN(parseInt(val)) ? 0 : parseInt(val)
 }

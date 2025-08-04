@@ -1,12 +1,12 @@
 /* DaisyUI 風格的 FullCalendar 樣式 */
 .daisy-fullcalendar-container .fc {
   font-family: inherit;
+  z-index: 1;
 }
 
 /* 主要容器 */
 .daisy-fullcalendar-container .fc-theme-standard .fc-scrollgrid {
-  border: 1px solid hsl(var(--bc) / 0.2);
-  border-radius: 0.5rem;
+  border-radius: 0.3rem;
   overflow: hidden;
 }
 
@@ -20,22 +20,10 @@
 }
 
 .daisy-fullcalendar-container .fc-col-header-cell {
-  background: hsl(var(--b2)) !important;
   border-right: 1px solid hsl(var(--bc) / 0.1);
-  padding: 0.75rem 0.5rem;
+  padding: 0.5rem 0.5rem;
   font-weight: 600;
   font-size: 0.875rem;
-  color: hsl(var(--bc)) !important;
-}
-
-/* 如果 DaisyUI 變數無效，使用備用顏色 */
-.daisy-fullcalendar-container .fc-col-header-cell {
-  background: var(--fallback-b2, #f2f2f2) !important;
-  color: var(--fallback-bc, #1f2937) !important;
-}
-
-/* 或者直接指定顏色 */
-.daisy-fullcalendar-container .fc-col-header-cell {
   background: #f2f2f2 !important; /* 淺灰背景 */
   color: #374151 !important; /* 深灰文字 */
 }
@@ -116,8 +104,7 @@
 
 /* 今天的日期 */
 .daisy-fullcalendar-container .fc-day-today {
-  background: hsl(var(--p) / 0.1) !important;
-  border-color: hsl(var(--p)) !important;
+  background-color: #ffeb3b37 !important; /* 黃色背景 */
 }
 
 /* 日期數字 */

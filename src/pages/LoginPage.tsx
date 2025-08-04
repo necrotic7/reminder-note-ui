@@ -18,7 +18,7 @@ function LoginPage() {
             } else {
                 const profile = await liff.getProfile()
                 localStorage.setItem('lineId', profile.userId)
-                navigate('/createReminder') // 成功後導到 home 頁面
+                navigate('/home') // 成功後導到 home 頁面
             }
         }
         init()

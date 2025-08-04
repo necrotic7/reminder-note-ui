@@ -15,6 +15,18 @@ interface DaisyFullCalendarProps {
   className?: string;
 }
 
+
+/**
+ * EventInput
+ * {
+      id: '1',
+      title: '團隊會議',
+      start: '2024-08-05T10:00:00',
+      end: '2024-08-05T11:00:00',
+      backgroundColor: 'hsl(var(--p))',
+      borderColor: 'hsl(var(--p))'
+    }
+ */
 const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
   events = [],
   onEventClick,
@@ -25,39 +37,28 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
 }) => {
   const calendarRef = useRef<FullCalendar>(null);
 
-  // 預設事件數據
-  const defaultEvents: EventInput[] = [
-    {
-      id: '1',
-      title: '團隊會議',
-      start: '2024-08-05T10:00:00',
-      end: '2024-08-05T11:00:00',
-      backgroundColor: 'hsl(var(--p))',
-      borderColor: 'hsl(var(--p))'
-    },
-    {
-      id: '2',
-      title: '專案截止日',
-      start: '2024-08-10',
-      backgroundColor: 'hsl(var(--er))',
-      borderColor: 'hsl(var(--er))'
-    },
-    {
-      id: '3',
-      title: '客戶拜訪',
-      start: '2024-08-15T14:00:00',
-      end: '2024-08-15T16:00:00',
-      backgroundColor: 'hsl(var(--su))',
-      borderColor: 'hsl(var(--su))'
-    },
-    {
-      id: '4',
-      title: '產品發布',
-      start: '2024-08-20',
-      backgroundColor: 'hsl(var(--wa))',
-      borderColor: 'hsl(var(--wa))'
+  // 跳轉到指定年月的簡單函式
+  const goToDate = (year: number, month: number) => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      // FullCalendar 內建的 gotoDate 方法
+      calendarApi.gotoDate(new Date(year, month - 1, 1)); // month-1 因為 JS 月份從 0 開始
     }
-  ];
+  };
+
+  // 年月選擇器的變更處理
+  const handleDateJump = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const year = parseInt(formData.get('year') as string);
+    const month = parseInt(formData.get('month') as string);
+    goToDate(year, month);
+  };
+
+  // 生成年份選項
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+  const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   const handleEventClick = (info: EventClickArg) => {
     if (onEventClick) {
@@ -92,6 +93,45 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
 
   return (
     <div className={`daisy-fullcalendar-container w-full max-w-6xl mx-auto ${className}`}>
+       {/* 簡單的年月跳轉器 */}
+      <div className="card bg-base-100 shadow-xl mb-4">
+        <div className="card-body py-4">
+          <form onSubmit={handleDateJump} className="flex flex-wrap items-center gap-4">
+            <span className="text-sm font-medium">跳轉到：</span>
+            
+            <select name="year" className="select select-bordered select-sm w-24" defaultValue={currentYear}>
+              {years.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+            <span className="text-sm">年</span>
+            
+            <select name="month" className="select select-bordered select-sm w-20" defaultValue={new Date().getMonth() + 1}>
+              {months.map(month => (
+                <option key={month} value={month}>{month}月</option>
+              ))}
+            </select>
+            
+            <button type="submit" className="btn btn-primary btn-sm">
+              跳轉
+            </button>
+            
+            <div className="divider divider-horizontal"></div>
+            
+            <button 
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => {
+                if (calendarRef.current) {
+                  calendarRef.current.getApi().today(); // FullCalendar 內建方法
+                }
+              }}
+            >
+              回到今天
+            </button>
+          </form>
+        </div>
+      </div>
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <FullCalendar
@@ -99,11 +139,11 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView={initialView}
             headerToolbar={{
-              left: 'prev,next today',
+              left: 'prev,next',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
-            events={events.length > 0 ? events : defaultEvents}
+            events={events}
             editable={true}
             selectable={true}
             selectMirror={true}
@@ -113,28 +153,12 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
             eventClick={handleEventClick}
             select={handleDateSelect}
             buttonText={{
-              today: '今天',
               month: '月',
               week: '週',
               day: '日'
             }}
             locale="zh-tw"
             firstDay={1} // 週一開始
-            // 自訂日期標題格式
-            dayHeaderContent={(args) => {
-              const date = args.date;
-              const month = date.getMonth() + 1;
-              const day = date.getDate();
-              const weekdays = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
-              const weekday = weekdays[date.getDay()];
-              
-              return (
-                <div className="text-center">
-                  <div className="font-bold">{month}/{day}</div>
-                  <div className="text-sm">{weekday}</div>
-                </div>
-              );
-            }}
             slotMinTime="08:00:00"
             slotMaxTime="20:00:00"
             allDayText="全天"
