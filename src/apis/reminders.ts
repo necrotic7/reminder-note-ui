@@ -1,4 +1,5 @@
-import { CreateReminderForm, ReqCreateReminderPayload } from '../types/reminders'
+import { CreateReminderForm, ReqCreateReminderPayload, ReqGetRemindersQuery, RespGetRemindersBody } from '../types/reminders'
+import { DateToUnix } from '../utils/common'
 import { ReminderNoteApi, showErrorToast, showSuccessToast } from './api'
 
 export async function CreateReminderApi(data: CreateReminderForm) {
@@ -26,14 +27,27 @@ export async function CreateReminderApi(data: CreateReminderForm) {
     }
 }
 
-export async function GetUserReminders(userId: string) {
+export async function GetUserReminders(params: ReqGetRemindersQuery) {
     try{
         const queryParams = new URLSearchParams();
-        queryParams.set('userId', userId)
-        const endpoint = `/reminders?${queryParams.toString()}`
-        const result = await ReminderNoteApi.get(endpoint)
+        queryParams.set('userId', params.userId)
 
-        return result;
+        if (params.page) {
+            queryParams.set('page', params.page.toString())
+        }
+        if (params.startTime) {
+            const st = DateToUnix(params.startTime);
+            queryParams.set('startTime', st.toString())
+        }
+        if (params.endTime) {
+            const et = DateToUnix(params.endTime);
+            queryParams.set('endTime', et.toString())
+        }
+        
+        const endpoint = `/reminders?${queryParams.toString()}`
+        const result = await ReminderNoteApi.get<RespGetRemindersBody>(endpoint)
+
+        return result.data;
     } catch(err) {
         console.log(err)
         showErrorToast(`取得提醒失敗：${err?.response?.data?.message ?? err}`)
