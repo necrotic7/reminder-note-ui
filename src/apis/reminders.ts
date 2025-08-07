@@ -24,6 +24,7 @@ export async function CreateReminderApi(data: CreateReminderForm) {
     } catch(err) {
         console.log(err)
         showErrorToast(`創建提醒失敗：${err?.response?.data?.message ?? err}`)
+        return false
     }
 }
 
