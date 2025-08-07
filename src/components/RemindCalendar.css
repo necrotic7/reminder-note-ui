@@ -256,3 +256,7 @@
   border-left-color: hsl(var(--er));
   border-right-color: hsl(var(--er));
 }
+
+.daisy-fullcalendar-container .fc-list-day-cushion {
+    color: #000;
+}

@@ -10,20 +10,26 @@ export const ReminderNoteApi = axios.create({
 
 const toastDuration = 5000;
 
+enum ToastType {
+  success = 'success',
+  info = 'info',
+  error = 'error',
+}
+
 export function showErrorToast(message: string) {
-  showToast('error', message)
+  showToast(ToastType.error, message)
 }
 
 export function showSuccessToast(message: string) {
-  showToast('success', message)
+  showToast(ToastType.success, message)
 }
 
-function showToast(type: 'error' | 'success', message: string) {
+function showToast(type: ToastType, message: string) {
   const container = document.getElementById('toast-container')
   if (!container) return
 
   const toast = document.createElement('div')
-  toast.className = `alert alert-${type} shadow-lg flex justify-between items-center gap-2`
+  toast.className = `alert alert-${type} alert-soft shadow-lg flex justify-between items-center gap-2`
 
   const span = document.createElement('span')
   span.textContent = message

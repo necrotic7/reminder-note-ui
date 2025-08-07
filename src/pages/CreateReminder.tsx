@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker"
 import { FormHelper } from "../utils/form";
 import { DaySelect, MonthSelect } from "../components/Date";
 import { CreateReminderApi } from "../apis/reminders";
+import moment from "moment";
 
 export default function CreateReminder() {
     let { form, setForm, setField } = FormHelper(new CreateReminderForm())
@@ -34,6 +35,9 @@ export default function CreateReminder() {
             setKey(prev => prev + 1)
         }
     }
+
+    const minDate = moment().startOf('day').toDate();
+    const currentYearStart = moment().startOf('year').toDate();
 
     return (
         <div>
@@ -96,6 +100,8 @@ export default function CreateReminder() {
                     <>
                         <label className="label">選擇日期</label>
                         <DatePicker
+                            showIcon
+                            minDate={minDate}
                             selected={form.fullDate}
                             onChange={(date) => {
                                 setField('fullDate', date)
@@ -138,14 +144,36 @@ export default function CreateReminder() {
 
                 {form.frequency === EnumReminderFrequency.Annually && (
                     <>
-                        <label className="label">提醒日期</label>
-                        <MonthSelect value={form.month} onChange={(val) => setField('month', val)} />
-                        <select className="select select-bordered w-full" value={form.date!} onChange={(e) => setField('date', parseInt(e.target.value))}>
-                            <option disabled value="">選擇日期</option>
-                            {[...Array(31)].map((_, i) => (
-                                <option key={i} value={i + 1}>{i + 1} 日</option>
-                            ))}
-                        </select>
+                        <label className="label">選擇日期</label>
+                        <DatePicker
+                            minDate={currentYearStart}
+                            selected={form.fullDate}
+                            onChange={(date) => {
+                                setField('fullDate', date)
+                                if (date) {
+                                    setField('month', date.getMonth() + 1)
+                                    setField('date', date.getDate())
+                                }
+                            }}
+                            showIcon
+                            dateFormat="MM-dd"
+                            className="input input-bordered w-full"
+                            placeholderText="請選擇日期"
+                            renderCustomHeader={({date}) => {
+                                const dateString = moment(date).format('MM-dd')
+                                return (
+                                    <div
+                                        style={{
+                                            margin: 10,
+                                            display: "flex",
+                                            justifyContent: "center",
+                                        }}
+                                        >
+                                            {dateString}
+                                        </div>
+                                )
+                            }}
+                        />
                     </>
                 )}
 
