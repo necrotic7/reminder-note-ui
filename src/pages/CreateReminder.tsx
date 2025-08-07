@@ -24,6 +24,7 @@ export default function CreateReminder() {
         }))
     }, [form.frequency])
 
+    // 填入navigation帶進來的參數
     const location = useLocation();
     useEffect(() => {
         if (location.state) {
@@ -35,6 +36,16 @@ export default function CreateReminder() {
             }
         }
     }, [location.state]);
+
+    // fullDate異動時，解析時間
+    useEffect(() => {
+        if (form.fullDate) {
+            setField('year', form.fullDate.getFullYear())
+            setField('month', form.fullDate.getMonth() + 1)
+            setField('date', form.fullDate.getDate())
+        }
+        
+    }, [form.fullDate])
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -119,9 +130,6 @@ export default function CreateReminder() {
                                 onChange={(date) => {
                                     if (date) {
                                         setField('fullDate', date)
-                                        setField('year', date.getFullYear())
-                                        setField('month', date.getMonth() + 1)
-                                        setField('date', date.getDate())
                                     }
                                 }}
                                 dateFormat="yyyy-MM-dd"
@@ -162,10 +170,8 @@ export default function CreateReminder() {
                                 minDate={currentYearStart}
                                 selected={form.fullDate}
                                 onChange={(date) => {
-                                    setField('fullDate', date)
                                     if (date) {
-                                        setField('month', date.getMonth() + 1)
-                                        setField('date', date.getDate())
+                                        setField('fullDate', date)
                                     }
                                 }}
                                 showIcon

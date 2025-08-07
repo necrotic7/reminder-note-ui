@@ -38,6 +38,7 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
   className = ''
 }) => {
   const calendarRef = useRef<FullCalendar>(null);
+  // 跳轉到事件詳細頁
   const handleEventClick = (info: EventClickArg) => {
     if (onEventClick) {
       onEventClick(info);
@@ -47,6 +48,7 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
     }
   };
 
+  // 跳轉到新增提醒頁
   const handleDateSelect = (info: DateSelectArg) => {
     if (onDateSelect) {
       onDateSelect(info);

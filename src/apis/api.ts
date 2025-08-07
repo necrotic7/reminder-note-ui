@@ -27,7 +27,6 @@ export function showSuccessToast(message: string) {
 function showToast(type: ToastType, message: string) {
   const container = document.getElementById('toast-container')
   if (!container) return
-
   const toast = document.createElement('div')
   toast.className = `alert alert-${type} alert-soft shadow-lg flex justify-between items-center gap-2`
 

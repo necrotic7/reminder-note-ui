@@ -1,4 +1,4 @@
-import { CreateReminderForm, ReqCreateReminderPayload, ReqGetRemindersQuery, RespGetRemindersBody } from '../types/reminders'
+import { CreateReminderForm, GetReminderListForm, ReqCreateReminderPayload, RespGetRemindersBody } from '../types/reminders'
 import { DateToUnix } from '../utils/common'
 import { ReminderNoteApi, showErrorToast, showSuccessToast } from './api'
 
@@ -28,7 +28,7 @@ export async function CreateReminderApi(data: CreateReminderForm) {
     }
 }
 
-export async function GetUserReminders(params: ReqGetRemindersQuery) {
+export async function GetUserReminders(params: GetReminderListForm) {
     try{
         const queryParams = new URLSearchParams();
         queryParams.set('userId', params.userId)

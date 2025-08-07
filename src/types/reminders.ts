@@ -46,23 +46,24 @@ export const EnumReminderFrequencyName: Record<EnumReminderFrequency, string> = 
     Annually: '每年',
 }
 
-export type ReqGetRemindersQuery = {
-    userId: string;
-    startTime?: Date;
-    endTime?: Date;
-    page?: number
+export type ReminderBody = {
+    id: string;
+    userID: string;
+    title: string;
+    content: string;
+    frequency: EnumReminderFrequency;
+    remindTime: RemindTimeBody;
 }
 
 export type RespGetRemindersBody = {
     status: boolean;
     message: string;
-    data: {
-        id: string;
-        userID: string;
-        title: string;
-        content: string;
-        frequency: EnumReminderFrequency;
-        remindTime: RemindTimeBody;
-    }[]
+    data: ReminderBody[]
+}
 
+export class GetReminderListForm {
+    userId: string;
+    page?: number;
+    startTime?: Date;
+    endTime?: Date;
 }

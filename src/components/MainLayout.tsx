@@ -38,7 +38,7 @@ export default function MainLayout() {
 
         {/*  主內容畫面 */}
         <main className="p-4">
-          <div className="max-w-2xl w-full mx-auto">
+          <div className="max-w-4xl w-full mx-auto">
             <Outlet />
           </div>
         </main>
@@ -50,10 +50,11 @@ export default function MainLayout() {
         <ul className="menu bg-base-200 text-base-content min-h-full w-64 p-4">
           <li><Link to="/home">🏠 首頁</Link></li>
           <li><Link to="/createReminder">📝 新增提醒</Link></li>
-          <li><Link to="/about">ℹ️ 關於</Link></li>
+          <li><Link to="/reminderList">ℹ️ 提醒清單</Link></li>
         </ul>
       </div>
       {/* toast提示窗 */}
+      <div className="alert alert-success alert-error alert-info hidden" />
       <div className="toast z-50 toast-top toast-end" id="toast-container"></div>
     </div>
   )
