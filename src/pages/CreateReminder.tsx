@@ -54,7 +54,6 @@ export default function CreateReminder() {
             setField('month', form.fullDate.getMonth() + 1)
             setField('date', form.fullDate.getDate())
         }
-
     }, [form.fullDate])
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -93,7 +92,6 @@ export default function CreateReminder() {
                         className="textarea textarea-bordered"
                         value={form.content}
                         onChange={(e) => setField('content', e.target.value)}
-                        required
                     />
 
                     <label className="label">提醒頻率</label>
