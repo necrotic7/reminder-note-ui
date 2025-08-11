@@ -16,7 +16,6 @@ export default function CreateReminder() {
     useEffect(() => {
         setForm(prev => ({
             ...prev,
-            time: '',
             year: '',
             month: '',
             date: '',
@@ -32,10 +31,21 @@ export default function CreateReminder() {
                 setField('frequency', location.state.frequency);
             }
             if (location.state.date) {
-                setField('fullDate', location.state.date);
+                const date = moment(location.state.date);
+                setField('fullDate', date.toDate());
+                setField('time', date.format('HH:mm'))
             }
         }
     }, [location.state]);
+
+    // time異動時，解析時間
+    useEffect(() => {
+        if (form.time) {
+            const [hr, min] = form.time.split(':')
+            setField('hour', Number(hr))
+            setField('minute', Number(min))
+        }
+    }, [form.time])
 
     // fullDate異動時，解析時間
     useEffect(() => {
@@ -44,7 +54,7 @@ export default function CreateReminder() {
             setField('month', form.fullDate.getMonth() + 1)
             setField('date', form.fullDate.getDate())
         }
-        
+
     }, [form.fullDate])
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -110,9 +120,6 @@ export default function CreateReminder() {
                                 value={form.time}
                                 onChange={(e) => {
                                     setField('time', e.target.value)
-                                    const [hr, min] = e.target.value.split(':')
-                                    setField('hour', Number(hr))
-                                    setField('minute', Number(min))
                                 }}
                                 required
                             />

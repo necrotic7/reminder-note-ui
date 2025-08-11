@@ -21,10 +21,17 @@ export default function Home() {
             });
             const events: EventInput[] = resp?.data?.map((data) => {
                 const {year, month, date, hour, minute} = data.remindTime;
-                const timeString = moment(`${year}-${month}-${date} ${hour}:${minute}:00`).format()
+                const startTime = moment(`${year}-${month}-${date} ${hour}:${minute}:00`);
+                let endTime = startTime.clone().add(30, 'minutes');
+                if (endTime.date() != startTime.date()) {
+                    endTime = startTime.clone().endOf('date')
+                }
                 return {
+                    id: data.id,
                     title: data.title,
-                    start: timeString,
+                    start: startTime.format('YYYY-MM-DD HH:mm:ss'),
+                    end: endTime.format('YYYY-MM-DD HH:mm:ss'),
+                    editable: false,
                 }
             }) ?? [];
             setEvents(events)
@@ -33,6 +40,7 @@ export default function Home() {
         }
     };
 
+    // 當日期格被點選時
     const onDateSelect = (info: DateSelectArg) => {
         let frequency = EnumReminderFrequency.Once;
         if (moment(info.start).isBefore(moment())) {

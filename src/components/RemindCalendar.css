@@ -172,21 +172,22 @@
 
 /* 彈出框樣式 */
 .daisy-fullcalendar-container .fc-popover {
-  background: hsl(var(--b1));
+  background: #04050b;
   border: 1px solid hsl(var(--bc) / 0.2);
   border-radius: 0.5rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .daisy-fullcalendar-container .fc-popover-header {
-  background: hsl(var(--b2));
+    color: #000;
+  background: #f2f2f2;
   border-bottom: 1px solid hsl(var(--bc) / 0.1);
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.5rem;
   font-weight: 600;
 }
 
 .daisy-fullcalendar-container .fc-popover-body {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.5rem;
 }
 
 /* 滾動條樣式 */
@@ -227,6 +228,10 @@
 }
 
 /* 時間格檢視樣式 */
+.daisy-fullcalendar-container .fc-timegrid-event {
+  background-color: var(--color-primary) !important;
+}
+
 .daisy-fullcalendar-container .fc-timegrid-slot {
   border-bottom: 1px solid hsl(var(--bc) / 0.1);
 }

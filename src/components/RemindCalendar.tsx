@@ -8,7 +8,7 @@ import './RemindCalendar.css';
 import listPlugin from '@fullcalendar/list'
 interface DaisyFullCalendarProps {
   events?: EventInput[];
-  onDatesChange?: (arg: DatesSetArg) => void 
+  onDatesChange?: (arg: DatesSetArg) => void
   onEventClick?: (info: EventClickArg) => void;
   onDateSelect?: (info: DateSelectArg) => void;
   height?: string | number;
@@ -24,6 +24,7 @@ interface DaisyFullCalendarProps {
       title: '團隊會議',
       start: '2024-08-05T10:00:00',
       end: '2024-08-05T11:00:00',
+      // TODO 加上顏色選擇功能
       backgroundColor: 'hsl(var(--p))',
       borderColor: 'hsl(var(--p))'
     }
@@ -52,25 +53,9 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
   const handleDateSelect = (info: DateSelectArg) => {
     if (onDateSelect) {
       onDateSelect(info);
-    } else {
-      // 預設行為：建立新事件
-      const title = prompt('請輸入事件標題:');
-      if (title) {
-        const newEvent: EventInput = {
-          id: Date.now().toString(),
-          title,
-          start: info.start,
-          end: info.end,
-          backgroundColor: 'hsl(var(--p))',
-          borderColor: 'hsl(var(--p))'
-        };
-
-        // 這裡你可以加入實際的新增事件邏輯
-        console.log('新增事件:', newEvent);
-        // setEvents(eventStates.concat(newEvent))
-      }
     }
   };
+
 
   return (
     <div className={`daisy-fullcalendar-container w-full max-w-6xl mx-auto ${className}`}>
@@ -79,6 +64,7 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <FullCalendar
+            defaultTimedEventDuration={"00:30"}
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
             initialView={initialView}
@@ -110,10 +96,10 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
             }}
             datesSet={(arg) => onDatesChange?.(arg)}
             events={events}
-            editable={true}
+            editable={false}
             selectable={true}
             selectMirror={true}
-            dayMaxEvents={true}
+            dayMaxEvents={3}
             weekends={true}
             height={height}
             eventClick={handleEventClick}
@@ -126,18 +112,15 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
             }}
             locale="zh-tw"
             firstDay={1} // 週一開始
-            slotMinTime="08:00:00"
-            slotMaxTime="20:00:00"
             allDayText="全天"
             moreLinkText="更多"
             noEventsText="沒有事件顯示"
             eventTimeFormat={{
               hour: '2-digit',
               minute: '2-digit',
-              hour12: false
+              hour12: false,
             }}
-            // 加入自定義 CSS 類別
-            themeSystem="standard"
+            displayEventEnd={false}
           />
         </div>
       </div>
