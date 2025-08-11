@@ -1,6 +1,9 @@
-import { Link, Outlet } from 'react-router-dom'
+import liff from '@line/liff'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 
 export default function MainLayout() {
+  const navigate = useNavigate()
+
   return (
     <div className="drawer lg:drawer-open">
       {/* Drawer Toggle 控制 */}
@@ -51,6 +54,10 @@ export default function MainLayout() {
           <li><Link to="/home">🏠 首頁</Link></li>
           <li><Link to="/createReminder">📝 新增提醒</Link></li>
           <li><Link to="/reminderList">ℹ️ 提醒清單</Link></li>
+          <li><button onClick={()=> {
+            liff.logout();
+            navigate('/')
+          }}>🏃 登出</button></li>
         </ul>
       </div>
       {/* toast提示窗 */}
