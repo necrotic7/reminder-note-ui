@@ -50,48 +50,6 @@ function MainLayout() {
 
           {/* 右側：用戶功能區 */}
           <div className="navbar-end">
-            {/* 主題切換按鈕 */}
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div tabIndex={0} className="dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52">
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="outline-base-content overflow-hidden rounded-lg outline outline-2 outline-offset-2" data-theme="light">
-                    <div className="bg-base-100 text-base-content w-full cursor-pointer font-sans" data-set-theme="light">
-                      <div className="grid grid-cols-5 grid-rows-3">
-                        <div className="col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4">
-                          <div className="flex-grow text-sm font-bold">淺色模式</div>
-                          <div className="flex flex-shrink-0 flex-wrap gap-1">
-                            <div className="bg-primary w-2 rounded"></div>
-                            <div className="bg-secondary w-2 rounded"></div>
-                            <div className="bg-accent w-2 rounded"></div>
-                            <div className="bg-neutral w-2 rounded"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="outline-base-content overflow-hidden rounded-lg outline outline-2 outline-offset-2" data-theme="dark">
-                    <div className="bg-base-100 text-base-content w-full cursor-pointer font-sans" data-set-theme="dark">
-                      <div className="grid grid-cols-5 grid-rows-3">
-                        <div className="col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4">
-                          <div className="flex-grow text-sm font-bold">深色模式</div>
-                          <div className="flex flex-shrink-0 flex-wrap gap-1">
-                            <div className="bg-primary w-2 rounded"></div>
-                            <div className="bg-secondary w-2 rounded"></div>
-                            <div className="bg-accent w-2 rounded"></div>
-                            <div className="bg-neutral w-2 rounded"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             {/* 通知按鈕 */}
             <div className="dropdown dropdown-end">
@@ -124,7 +82,7 @@ function MainLayout() {
         <footer className="footer footer-center p-4 bg-base-300 text-base-content border-t border-base-300">
           <aside>
             <p className="font-semibold">Reminder App</p>
-            <p className="text-xs opacity-70">讓生活更有條理 © 2024</p>
+            <p className="text-xs opacity-70">讓生活更有條理 © 2025</p>
           </aside>
         </footer>
       </div>

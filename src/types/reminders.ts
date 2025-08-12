@@ -67,3 +67,8 @@ export class GetReminderListForm {
     startTime?: Date;
     endTime?: Date;
 }
+
+export class DeleteReminderBody {
+    userId: string;
+    id: string;
+}

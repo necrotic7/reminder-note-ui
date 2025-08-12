@@ -1,4 +1,4 @@
-import { CreateReminderForm, GetReminderListForm, ReqCreateReminderPayload, RespGetRemindersBody } from '../types/reminders'
+import { CreateReminderForm, DeleteReminderBody, GetReminderListForm, ReqCreateReminderPayload, RespGetRemindersBody } from '../types/reminders'
 import { DateToUnix } from '../utils/common'
 import { ReminderNoteApi, showErrorToast, showSuccessToast } from './api'
 
@@ -52,6 +52,18 @@ export async function GetUserReminders(params: GetReminderListForm) {
     } catch(err) {
         console.log(err)
         showErrorToast(`取得提醒失敗：${err?.response?.data?.message ?? err}`)
+    }
+}
+
+export async function DeleteReminder(params: DeleteReminderBody) {
+    try{
+        await ReminderNoteApi.delete('/reminders', { data: params })
+        showSuccessToast('刪除成功')
+        return true
+    } catch(err) {
+        console.log(err)
+        showErrorToast(`刪除提醒失敗：${err?.response?.data?.message ?? err}`)
+        return false
     }
 }
 
