@@ -1,8 +1,20 @@
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import liff from '@line/liff'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
 
-export default function MainLayout() {
+function MainLayout() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleLogout = () => {
+    // 可以加個確認對話框
+    if (window.confirm('確定要登出嗎？')) {
+      liff.logout()
+      navigate('/')
+    }
+  }
+
+  // 判斷當前路由是否為活躍狀態
+  const isActive = (path) => location.pathname === path
 
   return (
     <div className="drawer lg:drawer-open">
@@ -10,15 +22,15 @@ export default function MainLayout() {
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
 
       {/* 畫面主要內容區 */}
-      <div className="drawer-content flex flex-col">
-        {/* Navbar 放最上面 */}
-        <div className="navbar bg-base-100 shadow-sm">
-          {/* 左側：漢堡按鈕（只有在小螢幕出現） */}
+      <div className="drawer-content flex flex-col min-h-screen">
+        {/* Enhanced Navbar */}
+        <div className="navbar bg-base-100 border-b border-base-300 sticky top-0 z-30 shadow-sm backdrop-blur-lg">
+          {/* 左側：漢堡按鈕 */}
           <div className="navbar-start">
             <label htmlFor="my-drawer" className="btn btn-ghost btn-circle lg:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
+                className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -30,39 +42,184 @@ export default function MainLayout() {
 
           {/* 中央：Logo 或標題 */}
           <div className="navbar-center">
-            <Link to="/" className="btn btn-ghost text-xl">
+            <Link to="/home" className="btn btn-ghost text-xl font-bold text-primary">
+              <span className="hidden sm:inline">📋 </span>
               Reminder
             </Link>
           </div>
 
-          {/* 右側：可以放設定、帳號之類 */}
-          <div className="navbar-end">{/* TODO: 放右側按鈕 */}</div>
+          {/* 右側：用戶功能區 */}
+          <div className="navbar-end">
+            {/* 主題切換按鈕 */}
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div tabIndex={0} className="dropdown-content z-[1] p-2 shadow-2xl bg-base-300 rounded-box w-52">
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="outline-base-content overflow-hidden rounded-lg outline outline-2 outline-offset-2" data-theme="light">
+                    <div className="bg-base-100 text-base-content w-full cursor-pointer font-sans" data-set-theme="light">
+                      <div className="grid grid-cols-5 grid-rows-3">
+                        <div className="col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4">
+                          <div className="flex-grow text-sm font-bold">淺色模式</div>
+                          <div className="flex flex-shrink-0 flex-wrap gap-1">
+                            <div className="bg-primary w-2 rounded"></div>
+                            <div className="bg-secondary w-2 rounded"></div>
+                            <div className="bg-accent w-2 rounded"></div>
+                            <div className="bg-neutral w-2 rounded"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="outline-base-content overflow-hidden rounded-lg outline outline-2 outline-offset-2" data-theme="dark">
+                    <div className="bg-base-100 text-base-content w-full cursor-pointer font-sans" data-set-theme="dark">
+                      <div className="grid grid-cols-5 grid-rows-3">
+                        <div className="col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4">
+                          <div className="flex-grow text-sm font-bold">深色模式</div>
+                          <div className="flex flex-shrink-0 flex-wrap gap-1">
+                            <div className="bg-primary w-2 rounded"></div>
+                            <div className="bg-secondary w-2 rounded"></div>
+                            <div className="bg-accent w-2 rounded"></div>
+                            <div className="bg-neutral w-2 rounded"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 通知按鈕 */}
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+                <div className="indicator">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-5 5v-5zM9 7V3a3 3 0 013-3H3a3 3 0 003 3v4h3z" />
+                  </svg>
+                  <span className="badge badge-xs badge-primary indicator-item"></span>
+                </div>
+              </div>
+              <div tabIndex={0} className="mt-3 z-[1] card card-compact dropdown-content w-52 bg-base-100 shadow">
+                <div className="card-body">
+                  <span className="font-bold text-lg">通知</span>
+                  <span className="text-info">你有新的提醒事項</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/*  主內容畫面 */}
-        <main className="p-4">
-          <div className="max-w-4xl w-full mx-auto">
+        {/* 主內容畫面 */}
+        <main className="flex-1 bg-base-200 p-4 lg:p-6">
+          <div className="max-w-6xl w-full mx-auto">
             <Outlet />
           </div>
         </main>
+
+        {/* Footer */}
+        <footer className="footer footer-center p-4 bg-base-300 text-base-content border-t border-base-300">
+          <aside>
+            <p className="font-semibold">Reminder App</p>
+            <p className="text-xs opacity-70">讓生活更有條理 © 2024</p>
+          </aside>
+        </footer>
       </div>
 
-      {/*  Drawer 側邊欄 */}
-      <div className="drawer-side">
+      {/* Enhanced Drawer 側邊欄 */}
+      <div className="drawer-side z-40">
         <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu bg-base-200 text-base-content min-h-full w-64 p-4">
-          <li><Link to="/home">🏠 首頁</Link></li>
-          <li><Link to="/createReminder">📝 新增提醒</Link></li>
-          <li><Link to="/reminderList">ℹ️ 提醒清單</Link></li>
-          <li><button onClick={()=> {
-            liff.logout();
-            navigate('/')
-          }}>🏃 登出</button></li>
-        </ul>
+        <aside className="bg-base-200 min-h-full w-64 flex flex-col">
+          {/* Sidebar Header */}
+          <div className="bg-primary text-primary-content p-4">
+            <div className="flex items-center gap-3">
+              <div className="avatar placeholder">
+                <div className="bg-primary-content text-primary rounded-full w-10">
+                  <span className="text-lg">👤</span>
+                </div>
+              </div>
+              <div>
+                <div className="font-bold">歡迎使用</div>
+                <div className="text-sm opacity-90">Reminder App</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Menu */}
+          <ul className="menu p-4 flex-1">
+            <li className="menu-title">
+              <span>主要功能</span>
+            </li>
+            <li>
+              <Link 
+                to="/home" 
+                className={isActive('/home') ? 'active' : ''}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                首頁
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/createReminder" 
+                className={isActive('/createReminder') ? 'active' : ''}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+                新增提醒
+              </Link>
+            </li>
+            <li>
+              <Link 
+                to="/reminderList" 
+                className={isActive('/reminderList') ? 'active' : ''}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                提醒清單
+              </Link>
+            </li>
+            
+            <li className="menu-title mt-4">
+              <span>其他選項</span>
+            </li>
+            <li>
+              <a>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                設定
+              </a>
+            </li>
+          </ul>
+
+          {/* Logout Button */}
+          <div className="p-4 border-t border-base-300">
+            <button 
+              onClick={handleLogout}
+              className="btn btn-outline btn-error w-full gap-2"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              登出
+            </button>
+          </div>
+        </aside>
       </div>
-      {/* toast提示窗 */}
-      <div className="alert alert-success alert-error alert-info hidden" />
-      <div className="toast z-50 toast-top toast-end" id="toast-container"></div>
+
+      {/* Enhanced Toast Container */}
+      <div className="toast toast-top toast-end z-50" id="toast-container"></div>
     </div>
   )
 }
+
+export default MainLayout
