@@ -64,8 +64,11 @@ export type RespGetRemindersBody = {
 export class GetReminderListForm {
     userId: string;
     page?: number;
-    startTime?: Date;
-    endTime?: Date;
+    createStartTime?: Date;
+    createEndTime?: Date;
+    title?: string;
+    content?: string;
+    frequency?: EnumReminderFrequency;
 }
 
 export class DeleteReminderBody {

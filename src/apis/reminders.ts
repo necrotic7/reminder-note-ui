@@ -36,13 +36,22 @@ export async function GetUserReminders(params: GetReminderListForm) {
         if (params.page) {
             queryParams.set('page', params.page.toString())
         }
-        if (params.startTime) {
-            const st = DateToUnix(params.startTime);
+        if (params.createStartTime) {
+            const st = DateToUnix(params.createStartTime);
             queryParams.set('startTime', st.toString())
         }
-        if (params.endTime) {
-            const et = DateToUnix(params.endTime);
+        if (params.createEndTime) {
+            const et = DateToUnix(params.createEndTime);
             queryParams.set('endTime', et.toString())
+        }
+        if (params.title) {
+            queryParams.set('title', params.title)
+        }
+        if (params.content) {
+            queryParams.set('content', params.content)
+        }
+        if (params.frequency) {
+            queryParams.set('frequency', params.frequency)
         }
         
         const endpoint = `/reminders?${queryParams.toString()}`

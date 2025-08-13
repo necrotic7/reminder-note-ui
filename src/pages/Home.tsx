@@ -16,8 +16,8 @@ export default function Home() {
             const lineId = localStorage.getItem('lineId')!;
             const resp = await GetUserReminders({
                 userId: lineId,
-                startTime: start,
-                endTime: end,
+                createStartTime: start,
+                createEndTime: end,
             });
             const events: EventInput[] = resp?.data?.map((data) => {
                 const {year, month, date, hour, minute} = data.remindTime;
