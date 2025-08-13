@@ -58,12 +58,16 @@ export type ReminderBody = {
 export type RespGetRemindersBody = {
     status: boolean;
     message: string;
-    data: ReminderBody[]
+    data: {
+        counts: number;
+        records: ReminderBody[]
+    }
 }
 
 export class GetReminderListForm {
     userId: string;
     page?: number;
+    pageSize?: number;
     createStartTime?: Date;
     createEndTime?: Date;
     title?: string;

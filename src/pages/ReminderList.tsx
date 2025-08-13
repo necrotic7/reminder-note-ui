@@ -1,24 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EnumReminderFrequency, EnumReminderFrequencyName, GetReminderListForm, ReminderBody, RemindTimeBody } from "../types/reminders";
 import { DeleteReminder, GetUserReminders } from "../apis/reminders";
 import { FormHelper } from "../utils/form";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
+import { Pagination } from "../components/Pagination";
 
 export default function ReminderList() {
     const navigate = useNavigate();
 
+    // 搜尋
+    let { form, setField } = FormHelper(new GetReminderListForm());
     const [reminderStates, setReminder] = useState<ReminderBody[]>([]);
+    const [reminderCounts, setReminderCounts] = useState(0);
+    // 刪除
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [deleteId, setDeleteId] = useState<string | null>(null)
+    // 刷新
     const [reload, setReload] = useState<number>(0);
-    const fetchReminders = async (form: GetReminderListForm) => {
+
+    const fetchReminders = async () => {
         try {
             const lineId = localStorage.getItem('lineId')!;
             form.userId = lineId;
             const resp = await GetUserReminders(form);
-           setReminder(resp?.data ?? []);
+            setReminder(resp?.data?.records ?? []);
+            setReminderCounts(resp?.data?.counts ?? 0)
         } catch (err) {
             console.error('API Error:', err);
         }
@@ -26,8 +34,8 @@ export default function ReminderList() {
 
     // 初始化資料
     useEffect(() => {
-        fetchReminders(new GetReminderListForm());
-    }, [navigate, reload])
+        fetchReminders();
+    }, [navigate, reload, form.page])
 
     // 刪除Reminder
     const deleteReminder = async () => {
@@ -44,9 +52,18 @@ export default function ReminderList() {
         }
     }
 
+    const handlePageChange = (page) => {
+        setField('page', page);
+    };
+
+    const handlePageSizeChange = (size) => {
+        setField('pageSize', size)
+        setField('page', 1);; // 重置到第一頁
+    };
+
     return (
-        <div>
-            <ReminderSearch onSearch={fetchReminders} />
+        <div >
+            <ReminderSearch onSearch={fetchReminders} form={form} setField={setField} />
             <div className="flex justify-center">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {reminderStates.map((reminder, idx) => (
@@ -89,14 +106,26 @@ export default function ReminderList() {
                             </div>
                         </div>
                     )}
+
                 </div>
+
             </div>
+            {/* 分頁元件 */}
+            <Pagination
+                currentPage={form.page}
+                totalItems={reminderCounts}
+                pageSize={form.pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                showSizeChanger
+                showTotal
+                maxVisiblePages={5}
+            />
         </div>
     )
 }
 
-function ReminderSearch({ onSearch }: { onSearch: (params: any) => void }) {
-    let { form, setField } = FormHelper(new GetReminderListForm())
+function ReminderSearch({ onSearch, form, setField }: { onSearch: (params: any) => void, form: GetReminderListForm, setField: (key: keyof GetReminderListForm, value: any) => void }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
