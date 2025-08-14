@@ -36,6 +36,9 @@ export async function GetUserReminders(params: GetReminderListForm) {
         if (params.page) {
             queryParams.set('page', params.page.toString())
         }
+        if (params.pageSize) {
+            queryParams.set('pageSize', params.pageSize.toString())
+        }
         if (params.createStartTime) {
             const st = DateToUnix(params.createStartTime);
             queryParams.set('startTime', st.toString())

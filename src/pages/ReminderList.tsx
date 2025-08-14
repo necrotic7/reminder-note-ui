@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { EnumReminderFrequency, EnumReminderFrequencyName, GetReminderListForm, ReminderBody, RemindTimeBody } from "../types/reminders";
 import { DeleteReminder, GetUserReminders } from "../apis/reminders";
 import { FormHelper } from "../utils/form";
@@ -11,7 +11,10 @@ export default function ReminderList() {
     const navigate = useNavigate();
 
     // 搜尋
-    let { form, setField } = FormHelper(new GetReminderListForm());
+    let { form, setField } = FormHelper<GetReminderListForm>({
+        userId: localStorage.getItem('lineId')!,
+        pageSize: 10,
+    });
     const [reminderStates, setReminder] = useState<ReminderBody[]>([]);
     const [reminderCounts, setReminderCounts] = useState(0);
     // 刪除

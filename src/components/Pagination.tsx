@@ -13,14 +13,16 @@ export const Pagination = ({
     maxVisiblePages = 5
 }) => {
     // 計算總頁數
-    const totalPages = Math.ceil(totalItems / pageSize);
+    const totalPages = useMemo(() => {
+        return Math.ceil(totalItems / pageSize);
+    }, [totalItems, pageSize]);
+
     // 計算顯示的頁碼範圍
     const visiblePages = useMemo(() => {
         const pages: number[] = [];
         const half = Math.floor(maxVisiblePages / 2);
         let start = Math.max(1, currentPage - half);
         let end = Math.min(totalPages, start + maxVisiblePages - 1);
-
         // 調整起始位置
         if (end - start + 1 < maxVisiblePages) {
             start = Math.max(1, end - maxVisiblePages + 1);

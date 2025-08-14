@@ -1,4 +1,4 @@
-export class CreateReminderForm {
+export type CreateReminderForm = {
     userId: string;
     title: string;
     content: string;
@@ -64,7 +64,7 @@ export type RespGetRemindersBody = {
     }
 }
 
-export class GetReminderListForm {
+export type GetReminderListForm = {
     userId: string;
     page?: number;
     pageSize?: number;

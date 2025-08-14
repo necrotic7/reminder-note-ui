@@ -19,7 +19,7 @@ export default function Home() {
                 createStartTime: start,
                 createEndTime: end,
             });
-            const events: EventInput[] = resp?.data?.map((data) => {
+            const events: EventInput[] = resp?.data?.records?.map((data) => {
                 const {year, month, date, hour, minute} = data.remindTime;
                 const startTime = moment(`${year}-${month}-${date} ${hour}:${minute}:00`);
                 let endTime = startTime.clone().add(30, 'minutes');

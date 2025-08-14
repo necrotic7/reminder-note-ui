@@ -9,7 +9,8 @@ import moment from "moment";
 import { useLocation } from "react-router-dom";
 
 export default function CreateReminder() {
-    let { form, setForm, setField } = FormHelper(new CreateReminderForm())
+    const initForm: any = {};
+    let { form, setForm, setField } = FormHelper<CreateReminderForm>(initForm)
     const [key, setKey] = useState(0)
 
     // 提醒頻率更動時，清空所有跟頻率相關的欄位
@@ -64,7 +65,7 @@ export default function CreateReminder() {
         const result = await CreateReminderApi(form);
         if (result) {
             // 清空表單
-            setForm(new CreateReminderForm())
+            setForm(initForm)
             setKey(prev => prev + 1)
         }
     }
