@@ -53,6 +53,8 @@ export type ReminderBody = {
     content: string;
     frequency: EnumReminderFrequency;
     remindTime: RemindTimeBody;
+    createdAt: Date;
+    updatedAt?: Date;
 }
 
 export type RespGetRemindersBody = {
@@ -64,7 +66,7 @@ export type RespGetRemindersBody = {
     }
 }
 
-export type GetReminderListForm = {
+export type ReqGetReminderListBody = {
     userId: string;
     page?: number;
     pageSize?: number;
@@ -75,7 +77,27 @@ export type GetReminderListForm = {
     frequency?: EnumReminderFrequency;
 }
 
-export class DeleteReminderBody {
+export type ReqDeleteReminderBody = {
     userId: string;
     id: string;
+}
+
+export type UpdateReminderForm = {
+    id: string;
+    userId: string;
+    title?: string;
+    content?: string;
+    frequency?: EnumReminderFrequency;
+    time?: string;
+    hour?: string;
+    minute?: string;
+    weekday?: string;
+    date?: string;
+    month?: string;
+    year?: string;
+    fullDate?: Date | null
+}
+
+export type ReqUpdateReminderBody = {
+
 }
