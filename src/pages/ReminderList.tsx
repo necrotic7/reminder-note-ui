@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { EnumReminderFrequency, EnumReminderFrequencyName, GetReminderListForm, ReminderBody, RemindTimeBody } from "../types/reminders";
-import { DeleteReminder, GetUserReminders } from "../apis/reminders";
+import { EnumReminderFrequency, EnumReminderFrequencyName, ReqGetReminderListBody, ReminderBody, RemindTimeBody, ReqUpdateReminderBody, UpdateReminderForm } from "../types/reminders";
+import { DeleteReminder, GetUserReminders, UpdateReminderApi } from "../apis/reminders";
 import { FormHelper } from "../utils/form";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import { Pagination } from "../components/Pagination";
+import UpsertReminder from "../components/UpsertReminder";
 
 export default function ReminderList() {
     const navigate = useNavigate();
-
+    const userId = localStorage.getItem('lineId')!;
     // 搜尋
-    let { form, setField } = FormHelper<GetReminderListForm>({
-        userId: localStorage.getItem('lineId')!,
+    let { form: searchForm, setField: setSearchField } = FormHelper<ReqGetReminderListBody>({
+        userId,
         pageSize: 10,
     });
     const [reminderStates, setReminder] = useState<ReminderBody[]>([]);
@@ -20,14 +21,18 @@ export default function ReminderList() {
     // 刪除
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [deleteId, setDeleteId] = useState<string | null>(null)
+    // 編輯
+    let { form: updateForm, setForm: setUpdateForm, setField: setUpdateField } = FormHelper<UpdateReminderForm>({
+        userId,
+    });
+    const [showUpdateModal, setShowUpdateModal] = useState(false)
     // 刷新
     const [reload, setReload] = useState<number>(0);
 
     const fetchReminders = async () => {
         try {
-            const lineId = localStorage.getItem('lineId')!;
-            form.userId = lineId;
-            const resp = await GetUserReminders(form);
+            searchForm.userId = userId;
+            const resp = await GetUserReminders(searchForm);
             setReminder(resp?.data?.records ?? []);
             setReminderCounts(resp?.data?.counts ?? 0)
         } catch (err) {
@@ -38,56 +43,77 @@ export default function ReminderList() {
     // 初始化資料
     useEffect(() => {
         fetchReminders();
-    }, [navigate, reload, form.page])
+    }, [navigate, reload, searchForm.page])
 
     // 刪除Reminder
     const deleteReminder = async () => {
         try {
             if (!deleteId) return;
-            const lineId = localStorage.getItem('lineId')!;
             await DeleteReminder({
-                userId: lineId,
+                userId,
                 id: deleteId,
             });
-            setReload(reload + 1);
+            setReload((pre) => pre + 1);
         } catch (err) {
             console.error('API Error:', err);
         }
     }
 
+    // TODO 分頁行爲整併入component
+    useEffect(() => {
+        setSearchField('page', 1); // 重置到第一頁
+    }, [reminderCounts])
+
     const handlePageChange = (page) => {
-        setField('page', page);
+        setSearchField('page', page);
     };
 
     const handlePageSizeChange = (size) => {
-        setField('pageSize', size)
-        setField('page', 1);; // 重置到第一頁
+        setSearchField('pageSize', size)
+        setSearchField('page', 1); // 重置到第一頁
     };
 
     return (
         <div >
-            <ReminderSearch onSearch={fetchReminders} form={form} setField={setField} />
+            <ReminderSearch onSearch={fetchReminders} form={searchForm} setField={setSearchField} />
             <div className="flex justify-center">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {reminderStates.map((reminder, idx) => (
+                    {reminderStates.map((r, idx) => (
                         <div key={idx} className="card card-border border-gray-700 w-80 bg-base-100 card-sm shadow-sm">
                             <div className="card-body">
-                                <h2 className="card-title">{reminder.title}</h2>
-                                <p>{reminder.content}</p>
-                                <p>{EnumReminderFrequencyName[reminder.frequency]}提醒：{getFmtRemindTime(reminder.frequency, reminder.remindTime)}</p>
+                                <h2 className="card-title">{r.title}</h2>
+                                <p>{r.content}</p>
+                                <p>{EnumReminderFrequencyName[r.frequency]} {getFmtRemindTime(r.frequency, r.remindTime)} 提醒</p>
+                                <p className="text-base-content/50">建立時間：{moment(r.createdAt).format('YYYY/MM/DD HH:mm:ss')}</p>
                                 <div className="justify-end card-actions">
-                                    <button className="btn btn-primary btn-sm btn-soft">編輯</button>
+                                    <button
+                                        className="btn btn-primary btn-sm btn-soft"
+                                        onClick={() => {
+                                            setUpdateForm({
+                                                ...r,
+                                                userId,
+                                                hour: r.remindTime.hour.toString(),
+                                                minute: r.remindTime.minute.toString(),
+                                                year: r.remindTime.year.toString(),
+                                                month: r.remindTime.month.toString(),
+                                                weekday: r.remindTime.weekday.toString(),
+                                                date: r.remindTime.date.toString(),
+                                                time:  moment().set({ hour: r.remindTime.hour, minute: r.remindTime.minute }).format('HH:mm'),
+                                                fullDate: moment(`${r.remindTime.year}-${r.remindTime.month}-${r.remindTime.date}`).toDate()
+                                            })
+                                            setShowUpdateModal(true)
+                                        }}
+                                    >編輯</button>
                                     <button
                                         className="btn btn-error btn-sm btn-soft"
                                         onClick={() => {
-                                            setDeleteId(reminder.id)
+                                            setDeleteId(r.id)
                                             setShowDeleteModal(true)
                                         }}
                                     >刪除</button>
                                 </div>
                             </div>
                         </div>
-
                     ))}
                     {showDeleteModal && (
                         <div className="modal modal-open">
@@ -109,15 +135,22 @@ export default function ReminderList() {
                             </div>
                         </div>
                     )}
-
+                    {showUpdateModal && (
+                        <UpdateReminderModalForm
+                            setModal={setShowUpdateModal}
+                            updateForm={updateForm}
+                            setField={setUpdateField}
+                            setReload={setReload}
+                        />
+                    )}
                 </div>
 
             </div>
             {/* 分頁元件 */}
             <Pagination
-                currentPage={form.page}
+                currentPage={searchForm.page}
                 totalItems={reminderCounts}
-                pageSize={form.pageSize}
+                pageSize={searchForm.pageSize}
                 onPageChange={handlePageChange}
                 onPageSizeChange={handlePageSizeChange}
                 showSizeChanger
@@ -128,7 +161,7 @@ export default function ReminderList() {
     )
 }
 
-function ReminderSearch({ onSearch, form, setField }: { onSearch: (params: any) => void, form: GetReminderListForm, setField: (key: keyof GetReminderListForm, value: any) => void }) {
+function ReminderSearch({ onSearch, form, setField }: { onSearch: (params: any) => void, form: ReqGetReminderListBody, setField: (key: keyof ReqGetReminderListBody, value: any) => void }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
@@ -222,6 +255,56 @@ function ReminderSearch({ onSearch, form, setField }: { onSearch: (params: any) 
             )}
         </div>
     );
+}
+
+function UpdateReminderModalForm(
+    { setModal, updateForm, setField, setReload }: {
+        setModal: (value: React.SetStateAction<boolean>) => void,
+        updateForm: UpdateReminderForm,
+        setField: (key: keyof UpdateReminderForm, value: any) => void,
+        setReload: (value: React.SetStateAction<number>) => void,
+    }) {
+
+    const handleSubmit = async (e) => {
+        try{
+            e.preventDefault();
+            await UpdateReminderApi(updateForm);
+            setModal(false)
+            setReload((pre) => pre + 1);
+        } catch(err) {
+            console.log(`更新提醒失敗：`, err);
+        }
+    };
+
+    const handleClose = () => {
+        setModal(false);
+    };
+
+    return (
+        <div className="modal modal-open">
+            <div className="modal-box max-w-md shadow-xl">
+                {/* 標題區域 */}
+                <div className="flex justify-end">
+                    <button
+                        onClick={handleClose}
+                        className="btn btn-sm btn-circle btn-ghost hover:bg-gray-100"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <UpsertReminder
+                    title="編輯提醒"
+                    form={updateForm}
+                    setField={setField}
+                    onSubmit={handleSubmit}
+                />
+            </div>
+            {/* 點擊外部關閉 - 移到modal-box外面 */}
+            <div className="modal-backdrop" onClick={handleClose}></div>
+        </div>
+    )
 }
 
 function getFmtRemindTime(frequency: EnumReminderFrequency, remindTime: RemindTimeBody) {

@@ -1,10 +1,10 @@
-import { CreateReminderForm, DeleteReminderBody, GetReminderListForm, ReqCreateReminderPayload, RespGetRemindersBody } from '../types/reminders'
+import { CreateReminderForm, ReqDeleteReminderBody, ReqGetReminderListBody, ReqCreateReminderBody, RespGetRemindersBody, UpdateReminderForm, ReqUpdateReminderBody } from '../types/reminders'
 import { DateToUnix } from '../utils/common'
 import { ReminderNoteApi, showErrorToast, showSuccessToast } from './api'
 
 export async function CreateReminderApi(data: CreateReminderForm) {
     try{
-        const payload: ReqCreateReminderPayload = {
+        const payload: ReqCreateReminderBody = {
             userId: data.userId,
             title: data.title,
             content: data.content,
@@ -28,7 +28,34 @@ export async function CreateReminderApi(data: CreateReminderForm) {
     }
 }
 
-export async function GetUserReminders(params: GetReminderListForm) {
+export async function UpdateReminderApi(data: UpdateReminderForm) {
+    try{
+        const payload: ReqUpdateReminderBody = {
+            id: data.id,
+            userId: data.userId,
+            title: data.title,
+            content: data.content,
+            frequency: data.frequency,
+            remindTime: {
+                hour: safeParseInt(data.hour),
+                minute: safeParseInt(data.minute),
+                weekday: safeParseInt(data.weekday),
+                date: safeParseInt(data.date),
+                month: safeParseInt(data.month),
+                year: safeParseInt(data.year),
+            }
+        }
+        await ReminderNoteApi.put('/reminders', payload)
+        showSuccessToast('更新成功')
+        return true
+    } catch(err) {
+        console.log(err)
+        showErrorToast(`更新提醒失敗：${err?.response?.data?.message ?? err}`)
+        return false
+    }
+}
+
+export async function GetUserReminders(params: ReqGetReminderListBody) {
     try{
         const queryParams = new URLSearchParams();
         queryParams.set('userId', params.userId)
@@ -67,7 +94,7 @@ export async function GetUserReminders(params: GetReminderListForm) {
     }
 }
 
-export async function DeleteReminder(params: DeleteReminderBody) {
+export async function DeleteReminder(params: ReqDeleteReminderBody) {
     try{
         await ReminderNoteApi.delete('/reminders', { data: params })
         showSuccessToast('刪除成功')

@@ -13,7 +13,7 @@ export type CreateReminderForm = {
     fullDate: Date | null
 }
 
-export type ReqCreateReminderPayload = {
+export type ReqCreateReminderBody = {
     userId: string;
     title: string;
     content: string;
@@ -85,19 +85,24 @@ export type ReqDeleteReminderBody = {
 export type UpdateReminderForm = {
     id: string;
     userId: string;
-    title?: string;
-    content?: string;
-    frequency?: EnumReminderFrequency;
-    time?: string;
-    hour?: string;
-    minute?: string;
-    weekday?: string;
-    date?: string;
-    month?: string;
-    year?: string;
-    fullDate?: Date | null
+    title: string;
+    content: string;
+    frequency: EnumReminderFrequency;
+    time: string;
+    hour: string;
+    minute: string;
+    weekday: string;
+    date: string;
+    month: string;
+    year: string;
+    fullDate: Date | null
 }
 
 export type ReqUpdateReminderBody = {
-
+    id: string;
+    userId: string;
+    title: string;
+    content: string;
+    frequency: EnumReminderFrequency;
+    remindTime: RemindTimeBody
 }

@@ -2,8 +2,9 @@ import DatePicker from "react-datepicker"
 import { CreateReminderForm, EnumReminderFrequency, EnumReminderFrequencyName, UpdateReminderForm } from "../types/reminders"
 import moment from "moment";
 import { DaySelect } from "./Date";
-import { useRef, useState } from "react";
 import { TimePicker } from "./TimePicker";
+import "react-datepicker/dist/react-datepicker.css"
+import { useEffect } from "react";
 
 export default function UpsertReminder(
     { title, form, setField, onSubmit, resetKey }: {
@@ -11,12 +12,37 @@ export default function UpsertReminder(
         form: CreateReminderForm | UpdateReminderForm,
         setField: (key: any, value: any) => void,
         onSubmit: (p: any) => void,
-        resetKey: number,
+        resetKey?: number,
     }
 ) {
-    const [fullTime, setFullTime] = useState<Date | null>()
     const minDate = moment().startOf('day').toDate();
     const currentYearStart = moment().startOf('year').toDate();
+
+     // 提醒頻率更動時，清空所有跟頻率相關的欄位
+    useEffect(() => {
+        setField('year', '')
+        setField('month', '')
+        setField('date', '')
+        setField('weekday', '')
+    }, [form.frequency])
+
+    // time異動時，解析時間
+        useEffect(() => {
+            if (form.time) {
+                const [hr, min] = form.time.split(':')
+                setField('hour', Number(hr))
+                setField('minute', Number(min))
+            }
+        }, [form.time])
+    
+        // fullDate異動時，解析時間
+        useEffect(() => {
+            if (form.fullDate) {
+                setField('year', form.fullDate.getFullYear())
+                setField('month', form.fullDate.getMonth() + 1)
+                setField('date', form.fullDate.getDate())
+            }
+        }, [form.fullDate])
 
     return (
         <div>
@@ -70,7 +96,6 @@ export default function UpsertReminder(
                         <>
                             <label className="label">選擇日期</label>
                             <DatePicker
-                                showIcon
                                 minDate={minDate}
                                 selected={form.fullDate}
                                 onChange={(date) => {
@@ -120,24 +145,9 @@ export default function UpsertReminder(
                                         setField('fullDate', date)
                                     }
                                 }}
-                                showIcon
                                 dateFormat="MM-dd"
                                 className="input input-bordered w-full"
                                 placeholderText="請選擇日期"
-                                renderCustomHeader={({ date }) => {
-                                    const dateString = moment(date).format('MM-dd')
-                                    return (
-                                        <div
-                                            style={{
-                                                margin: 10,
-                                                display: "flex",
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {dateString}
-                                        </div>
-                                    )
-                                }}
                             />
                         </>
                     )}
