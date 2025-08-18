@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { GetUserReminders } from "../apis/reminders";
-import RemindCalendar from "../components/RemindCalendar";
+import { useEffect, useState } from 'react';
+import { GetUserReminders } from '../apis/reminders';
+import RemindCalendar from '../components/RemindCalendar';
 import moment from 'moment';
-import { DateSelectArg, EventInput } from "@fullcalendar/core/index.js";
-import { useNavigate } from "react-router-dom";
-import { EnumReminderFrequency } from "../types/reminders";
+import { DateSelectArg, EventInput } from '@fullcalendar/core/index.js';
+import { useNavigate } from 'react-router-dom';
+import { EnumReminderFrequency } from '../types/reminders';
 
 export default function Home() {
     const navigate = useNavigate();
@@ -19,22 +19,25 @@ export default function Home() {
                 createStartTime: start,
                 createEndTime: end,
             });
-            const events: EventInput[] = resp?.data?.records?.map((data) => {
-                const {year, month, date, hour, minute} = data.remindTime;
-                const startTime = moment(`${year}-${month}-${date} ${hour}:${minute}:00`);
-                let endTime = startTime.clone().add(30, 'minutes');
-                if (endTime.date() != startTime.date()) {
-                    endTime = startTime.clone().endOf('date')
-                }
-                return {
-                    id: data.id,
-                    title: data.title,
-                    start: startTime.format('YYYY-MM-DD HH:mm:ss'),
-                    end: endTime.format('YYYY-MM-DD HH:mm:ss'),
-                    editable: false,
-                }
-            }) ?? [];
-            setEvents(events)
+            const events: EventInput[] =
+                resp?.data?.records?.map((data) => {
+                    const { year, month, date, hour, minute } = data.remindTime;
+                    const startTime = moment(
+                        `${year}-${month}-${date} ${hour}:${minute}:00`,
+                    );
+                    let endTime = startTime.clone().add(30, 'minutes');
+                    if (endTime.date() != startTime.date()) {
+                        endTime = startTime.clone().endOf('date');
+                    }
+                    return {
+                        id: data.id,
+                        title: data.title,
+                        start: startTime.format('YYYY-MM-DD HH:mm:ss'),
+                        end: endTime.format('YYYY-MM-DD HH:mm:ss'),
+                        editable: false,
+                    };
+                }) ?? [];
+            setEvents(events);
         } catch (err) {
             console.error('API Error:', err);
         }
@@ -47,12 +50,12 @@ export default function Home() {
             frequency = EnumReminderFrequency.Annually;
         }
         navigate('/createReminder', {
-            state: { 
+            state: {
                 frequency,
-                date: info.start
-            }
-        })
-    }
+                date: info.start,
+            },
+        });
+    };
 
     // 正常顯示
     return (

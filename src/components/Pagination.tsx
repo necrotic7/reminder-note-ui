@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from "react";
-import { ReqGetReminderListBody } from "../types/reminders";
+import { useEffect, useMemo } from 'react';
+import { ReqGetReminderListBody } from '../types/reminders';
 
-export function Pagination ({
+export function Pagination({
     currentPage,
     totalItems,
     pageSize,
@@ -12,15 +12,15 @@ export function Pagination ({
     showTotal = false,
     maxVisiblePages = 5,
 }: {
-    currentPage: number,
-    totalItems: number,
-    pageSize: number,
-    setField: (key: any, value: any) => void,
-    showSizeChanger?: boolean,
-    pageSizeOptions?: number[],
-    showQuickJumper?:boolean,
-    showTotal?: boolean,
-    maxVisiblePages?: number,
+    currentPage: number;
+    totalItems: number;
+    pageSize: number;
+    setField: (key: any, value: any) => void;
+    showSizeChanger?: boolean;
+    pageSizeOptions?: number[];
+    showQuickJumper?: boolean;
+    showTotal?: boolean;
+    maxVisiblePages?: number;
 }) {
     // 計算總頁數
     const totalPages = useMemo(() => {
@@ -66,17 +66,17 @@ export function Pagination ({
     const { start, end } = getDataRange();
 
     useEffect(() => {
-            setField('page', 1); // 重置到第一頁
-        }, [totalItems])
-    
-        const onPageChange = (page) => {
-            setField('page', page);
-        };
-    
-        const onPageSizeChange = (size) => {
-            setField('pageSize', size)
-            setField('page', 1); // 重置到第一頁
-        };
+        setField('page', 1); // 重置到第一頁
+    }, [totalItems]);
+
+    const onPageChange = (page) => {
+        setField('page', page);
+    };
+
+    const onPageSizeChange = (size) => {
+        setField('pageSize', size);
+        setField('page', 1); // 重置到第一頁
+    };
 
     return (
         <div>
@@ -86,127 +86,137 @@ export function Pagination ({
                     顯示 {start}-{end} 筆，共 {totalItems} 筆資料
                 </div>
             )}
-        <div className="flex flex-col  items-center gap-4 p-4">
-            <div className="flex items-center gap-4">
-                {/* 每頁筆數選擇器 */}
-                {showSizeChanger && (
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm">每頁</span>
-                        <select
-                            value={pageSize}
-                            onChange={(e) => onPageSizeChange?.(parseInt(e.target.value))}
-                            className="select select-bordered select-sm"
-                        >
-                            {pageSizeOptions.map(size => (
-                                <option key={size} value={size}>{size}</option>
-                            ))}
-                        </select>
-                        <span className="text-sm">筆</span>
-                    </div>
-                )}
-
-                {/* 分頁控制 */}
-                <div className="flex items-center gap-1">
-                    {/* 第一頁 */}
-                    <button
-                        onClick={() => onPageChange(1)}
-                        disabled={currentPage === 1}
-                        className="btn btn-sm btn-outline"
-                        title="第一頁"
-                    >
-                        ⏮
-                    </button>
-
-                    {/* 上一頁 */}
-                    <button
-                        onClick={() => onPageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="btn btn-sm btn-outline"
-                        title="上一頁"
-                    >
-                        ⏴
-                    </button>
-
-                    {/* 頁碼 */}
-                    {visiblePages[0] > 1 && (
-                        <>
-                            <button
-                                onClick={() => onPageChange(1)}
-                                className="btn btn-sm btn-outline"
+            <div className="flex flex-col  items-center gap-4 p-4">
+                <div className="flex items-center gap-4">
+                    {/* 每頁筆數選擇器 */}
+                    {showSizeChanger && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm">每頁</span>
+                            <select
+                                value={pageSize}
+                                onChange={(e) =>
+                                    onPageSizeChange?.(parseInt(e.target.value))
+                                }
+                                className="select select-bordered select-sm"
                             >
-                                1
-                            </button>
-                            {visiblePages[0] > 2 && (
-                                <span className="px-2 text-gray-400">...</span>
-                            )}
-                        </>
+                                {pageSizeOptions.map((size) => (
+                                    <option key={size} value={size}>
+                                        {size}
+                                    </option>
+                                ))}
+                            </select>
+                            <span className="text-sm">筆</span>
+                        </div>
                     )}
 
-                    {visiblePages.map(page => (
+                    {/* 分頁控制 */}
+                    <div className="flex items-center gap-1">
+                        {/* 第一頁 */}
                         <button
-                            key={page}
-                            onClick={() => onPageChange(page)}
-                            className={`btn btn-sm ${page === currentPage
-                                    ? 'btn-primary'
-                                    : 'btn-outline'
-                                }`}
+                            onClick={() => onPageChange(1)}
+                            disabled={currentPage === 1}
+                            className="btn btn-sm btn-outline"
+                            title="第一頁"
                         >
-                            {page}
+                            ⏮
                         </button>
-                    ))}
 
-                    {visiblePages[visiblePages.length - 1] < totalPages && (
-                        <>
-                            {visiblePages[visiblePages.length - 1] < totalPages - 1 && (
-                                <span className="px-2 text-gray-400">...</span>
-                            )}
+                        {/* 上一頁 */}
+                        <button
+                            onClick={() => onPageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="btn btn-sm btn-outline"
+                            title="上一頁"
+                        >
+                            ⏴
+                        </button>
+
+                        {/* 頁碼 */}
+                        {visiblePages[0] > 1 && (
+                            <>
+                                <button
+                                    onClick={() => onPageChange(1)}
+                                    className="btn btn-sm btn-outline"
+                                >
+                                    1
+                                </button>
+                                {visiblePages[0] > 2 && (
+                                    <span className="px-2 text-gray-400">
+                                        ...
+                                    </span>
+                                )}
+                            </>
+                        )}
+
+                        {visiblePages.map((page) => (
                             <button
-                                onClick={() => onPageChange(totalPages)}
-                                className="btn btn-sm btn-outline"
+                                key={page}
+                                onClick={() => onPageChange(page)}
+                                className={`btn btn-sm ${
+                                    page === currentPage
+                                        ? 'btn-primary'
+                                        : 'btn-outline'
+                                }`}
                             >
-                                {totalPages}
+                                {page}
                             </button>
-                        </>
-                    )}
+                        ))}
 
-                    {/* 下一頁 */}
-                    <button
-                        onClick={() => onPageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="btn btn-sm btn-outline"
-                        title="下一頁"
-                    >
-                        ⏵
-                    </button>
+                        {visiblePages[visiblePages.length - 1] < totalPages && (
+                            <>
+                                {visiblePages[visiblePages.length - 1] <
+                                    totalPages - 1 && (
+                                    <span className="px-2 text-gray-400">
+                                        ...
+                                    </span>
+                                )}
+                                <button
+                                    onClick={() => onPageChange(totalPages)}
+                                    className="btn btn-sm btn-outline"
+                                >
+                                    {totalPages}
+                                </button>
+                            </>
+                        )}
 
-                    {/* 最後一頁 */}
-                    <button
-                        onClick={() => onPageChange(totalPages)}
-                        disabled={currentPage === totalPages}
-                        className="btn btn-sm btn-outline"
-                        title="最後一頁"
-                    >
-                        ⏭
-                    </button>
-                </div>
+                        {/* 下一頁 */}
+                        <button
+                            onClick={() => onPageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="btn btn-sm btn-outline"
+                            title="下一頁"
+                        >
+                            ⏵
+                        </button>
 
-                {/* 快速跳轉 */}
-                {showQuickJumper && (
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm">跳至</span>
-                        <input
-                            type="number"
-                            min="1"
-                            max={totalPages}
-                            className="input input-bordered input-sm w-16 text-center"
-                            placeholder="頁"
-                            onKeyPress={handleQuickJump}
-                        />
-                        <span className="text-sm">頁</span>
+                        {/* 最後一頁 */}
+                        <button
+                            onClick={() => onPageChange(totalPages)}
+                            disabled={currentPage === totalPages}
+                            className="btn btn-sm btn-outline"
+                            title="最後一頁"
+                        >
+                            ⏭
+                        </button>
                     </div>
-                )}
+
+                    {/* 快速跳轉 */}
+                    {showQuickJumper && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm">跳至</span>
+                            <input
+                                type="number"
+                                min="1"
+                                max={totalPages}
+                                className="input input-bordered input-sm w-16 text-center"
+                                placeholder="頁"
+                                onKeyPress={handleQuickJump}
+                            />
+                            <span className="text-sm">頁</span>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
-        </div>
     );
-};
+}

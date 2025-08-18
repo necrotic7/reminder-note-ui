@@ -10,16 +10,16 @@ export type CreateReminderForm = {
     date: string;
     month: string;
     year: string;
-    fullDate: Date | null
-}
+    fullDate: Date | null;
+};
 
 export type ReqCreateReminderBody = {
     userId: string;
     title: string;
     content: string;
     frequency: EnumReminderFrequency;
-    remindTime: RemindTimeBody
-}
+    remindTime: RemindTimeBody;
+};
 
 export type RemindTimeBody = {
     hour: number;
@@ -28,7 +28,7 @@ export type RemindTimeBody = {
     date: number;
     month: number;
     year: number;
-}
+};
 
 export enum EnumReminderFrequency {
     Once = 'Once',
@@ -38,13 +38,14 @@ export enum EnumReminderFrequency {
     Annually = 'Annually',
 }
 
-export const EnumReminderFrequencyName: Record<EnumReminderFrequency, string> = {
-    Once: '單次',
-    Daily: '每日',
-    Weekly: '每週',
-    Monthly: '每月',
-    Annually: '每年',
-}
+export const EnumReminderFrequencyName: Record<EnumReminderFrequency, string> =
+    {
+        Once: '單次',
+        Daily: '每日',
+        Weekly: '每週',
+        Monthly: '每月',
+        Annually: '每年',
+    };
 
 export type ReminderBody = {
     id: string;
@@ -55,16 +56,16 @@ export type ReminderBody = {
     remindTime: RemindTimeBody;
     createdAt: Date;
     updatedAt?: Date;
-}
+};
 
 export type RespGetRemindersBody = {
     status: boolean;
     message: string;
     data: {
         counts: number;
-        records: ReminderBody[]
-    }
-}
+        records: ReminderBody[];
+    };
+};
 
 export type ReqGetReminderListBody = {
     userId: string;
@@ -75,12 +76,12 @@ export type ReqGetReminderListBody = {
     title?: string;
     content?: string;
     frequency?: EnumReminderFrequency;
-}
+};
 
 export type ReqDeleteReminderBody = {
     userId: string;
     id: string;
-}
+};
 
 export type UpdateReminderForm = {
     id: string;
@@ -95,8 +96,8 @@ export type UpdateReminderForm = {
     date: string;
     month: string;
     year: string;
-    fullDate: Date | null
-}
+    fullDate: Date | null;
+};
 
 export type ReqUpdateReminderBody = {
     id: string;
@@ -104,5 +105,5 @@ export type ReqUpdateReminderBody = {
     title: string;
     content: string;
     frequency: EnumReminderFrequency;
-    remindTime: RemindTimeBody
-}
+    remindTime: RemindTimeBody;
+};
