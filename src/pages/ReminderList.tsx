@@ -59,20 +59,6 @@ export default function ReminderList() {
         }
     }
 
-    // TODO 分頁行爲整併入component
-    useEffect(() => {
-        setSearchField('page', 1); // 重置到第一頁
-    }, [reminderCounts])
-
-    const handlePageChange = (page) => {
-        setSearchField('page', page);
-    };
-
-    const handlePageSizeChange = (size) => {
-        setSearchField('pageSize', size)
-        setSearchField('page', 1); // 重置到第一頁
-    };
-
     return (
         <div >
             <ReminderSearch onSearch={fetchReminders} form={searchForm} setField={setSearchField} />
@@ -148,14 +134,12 @@ export default function ReminderList() {
             </div>
             {/* 分頁元件 */}
             <Pagination
-                currentPage={searchForm.page}
+                currentPage={searchForm.page ?? 1}
                 totalItems={reminderCounts}
-                pageSize={searchForm.pageSize}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handlePageSizeChange}
+                pageSize={searchForm.pageSize ?? 10}
+                setField={setSearchField}
                 showSizeChanger
                 showTotal
-                maxVisiblePages={5}
             />
         </div>
     )

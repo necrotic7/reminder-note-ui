@@ -1,17 +1,27 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { ReqGetReminderListBody } from "../types/reminders";
 
-export const Pagination = ({
-    currentPage = 1,
-    totalItems = 0,
-    pageSize = 10,
-    onPageChange,
+export function Pagination ({
+    currentPage,
+    totalItems,
+    pageSize,
+    setField,
     showSizeChanger = false,
     pageSizeOptions = [10, 20, 50, 100],
-    onPageSizeChange,
     showQuickJumper = false,
     showTotal = false,
-    maxVisiblePages = 5
-}) => {
+    maxVisiblePages = 5,
+}: {
+    currentPage: number,
+    totalItems: number,
+    pageSize: number,
+    setField: (key: any, value: any) => void,
+    showSizeChanger?: boolean,
+    pageSizeOptions?: number[],
+    showQuickJumper?:boolean,
+    showTotal?: boolean,
+    maxVisiblePages?: number,
+}) {
     // 計算總頁數
     const totalPages = useMemo(() => {
         return Math.ceil(totalItems / pageSize);
@@ -54,6 +64,19 @@ export const Pagination = ({
     };
 
     const { start, end } = getDataRange();
+
+    useEffect(() => {
+            setField('page', 1); // 重置到第一頁
+        }, [totalItems])
+    
+        const onPageChange = (page) => {
+            setField('page', page);
+        };
+    
+        const onPageSizeChange = (size) => {
+            setField('pageSize', size)
+            setField('page', 1); // 重置到第一頁
+        };
 
     return (
         <div>
