@@ -1,4 +1,4 @@
-import { Layout, Menu, Button, Dropdown, Modal, message, App, ConfigProvider, theme, Drawer } from 'antd';
+import { Layout, Menu, Button, Dropdown, Modal, message, App, ConfigProvider, theme, Drawer, Grid } from 'antd';
 import {
     HomeOutlined,
     PlusOutlined,
@@ -8,6 +8,7 @@ import {
     LogoutOutlined,
     MoonOutlined,
     MenuOutlined,
+    StepBackwardOutlined,
 } from '@ant-design/icons';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import liff from '@line/liff';
@@ -21,10 +22,12 @@ import { setToast } from "./Toast";
 function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
+    const screens = Grid.useBreakpoint();
+    const isMobile = !screens.md;
+    
     const [logoutModal, setLogoutModal] = useState(false);
     const [darkTheme, setDarkTheme] = useState(true);
     const [collapsed, setCollapsed] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
 
     const [messageApi, contextHolder] = message.useMessage();
@@ -34,17 +37,9 @@ function MainLayout() {
         setToast(messageApi);
     }, [messageApi]);
 
-    // 檢測螢幕尺寸
     useEffect(() => {
-        const checkScreenSize = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
-
-        checkScreenSize();
-        window.addEventListener('resize', checkScreenSize);
-
-        return () => window.removeEventListener('resize', checkScreenSize);
-    }, []);
+        messageApi.info(`isMobile: ${isMobile}`)
+    }, [isMobile])
 
     const menuItems: ItemType<MenuItemType>[] = [
         {
@@ -95,10 +90,11 @@ function MainLayout() {
                     fontWeight: 'bold',
                     display: 'flex',
                     alignItems: 'center',
-                    fontSize: isMobile ? '16px' : '18px',
+                    fontSize: '14px',
                 }}
+                
             >
-                Reminder App
+                {collapsed ? '' : '你好，User'}
             </div>
             <Menu
                 mode="inline"
@@ -124,31 +120,22 @@ function MainLayout() {
                     <Sider
                         collapsible
                         collapsed={collapsed}
-                        onCollapse={setCollapsed}
+                        onCollapse={(val) => setCollapsed(val)}
                         breakpoint="md"
-                        collapsedWidth="0"
-                        style={{
-                            overflow: 'auto',
-                            height: '100vh',
-                            position: 'fixed',
-                            left: 0,
-                            top: 0,
-                            bottom: 0,
-                        }}
                     >
                         {sidebarContent}
                     </Sider>
                 )}
 
                 {/* 手機版抽屜式側邊欄 */}
-                {isMobile && (
+                { isMobile && (
                     <Drawer
                         title="選單"
                         placement="left"
                         closable={true}
                         onClose={() => setDrawerVisible(false)}
                         open={drawerVisible}
-                        bodyStyle={{ padding: 0 }}
+                        styles={{body: {padding: 0}}}
                         width={280}
                     >
                         {sidebarContent}
@@ -157,7 +144,6 @@ function MainLayout() {
 
                 <Layout
                     style={{
-                        marginLeft: !isMobile && !collapsed ? 200 : 0,
                         transition: 'margin-left 0.2s',
                     }}
                 >
@@ -234,7 +220,6 @@ function MainLayout() {
                     {/* 主內容 */}
                     <Content
                         style={{
-                            margin: isMobile ? 8 : 16,
                             overflow: 'initial',
                         }}
                     >
@@ -278,7 +263,6 @@ function MainLayout() {
                 >
                     <p>登出後需要重新登入才能使用應用程式。</p>
                 </Modal>
-                <div className='toast-container'></div>
             </Layout>
         </ConfigProvider>
     );
