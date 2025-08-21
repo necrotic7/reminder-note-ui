@@ -1,3 +1,4 @@
+import { Toast } from '../components/common/Toast';
 import {
     CreateReminderForm,
     ReqDeleteReminderBody,
@@ -8,7 +9,7 @@ import {
     ReqUpdateReminderBody,
 } from '../types/reminders';
 import { DateToUnix } from '../utils/common';
-import { ReminderNoteApi, showErrorToast, showSuccessToast } from './api';
+import { ReminderNoteApi } from './api';
 
 export async function CreateReminderApi(data: CreateReminderForm) {
     try {
@@ -27,11 +28,11 @@ export async function CreateReminderApi(data: CreateReminderForm) {
             },
         };
         await ReminderNoteApi.post('/reminders', payload);
-        showSuccessToast('創建成功');
+        Toast.success('創建成功');
         return true;
     } catch (err) {
         console.log(err);
-        showErrorToast(`創建提醒失敗：${err?.response?.data?.message ?? err}`);
+        Toast.error(`創建提醒失敗：${err?.response?.data?.message ?? err}`);
         return false;
     }
 }
@@ -54,11 +55,11 @@ export async function UpdateReminderApi(data: UpdateReminderForm) {
             },
         };
         await ReminderNoteApi.put('/reminders', payload);
-        showSuccessToast('更新成功');
+        Toast.success('更新成功');
         return true;
     } catch (err) {
         console.log(err);
-        showErrorToast(`更新提醒失敗：${err?.response?.data?.message ?? err}`);
+        Toast.error(`更新提醒失敗：${err?.response?.data?.message ?? err}`);
         return false;
     }
 }
@@ -99,18 +100,18 @@ export async function GetUserReminders(params: ReqGetReminderListBody) {
         return result.data;
     } catch (err) {
         console.log(err);
-        showErrorToast(`取得提醒失敗：${err?.response?.data?.message ?? err}`);
+        Toast.error(`取得提醒失敗：${err?.response?.data?.message ?? err}`);
     }
 }
 
 export async function DeleteReminder(params: ReqDeleteReminderBody) {
     try {
         await ReminderNoteApi.delete('/reminders', { data: params });
-        showSuccessToast('刪除成功');
+        Toast.success('刪除成功');
         return true;
     } catch (err) {
         console.log(err);
-        showErrorToast(`刪除提醒失敗：${err?.response?.data?.message ?? err}`);
+        Toast.error(`刪除提醒失敗：${err?.response?.data?.message ?? err}`);
         return false;
     }
 }

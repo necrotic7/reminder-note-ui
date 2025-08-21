@@ -16,6 +16,8 @@ import { useEffect, useState } from 'react';
 import { red } from '@ant-design/colors';
 const { Header, Sider, Content, Footer } = Layout;
 
+import { setToast } from "./Toast";
+
 function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -24,6 +26,13 @@ function MainLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
+
+    const [messageApi, contextHolder] = message.useMessage();
+
+    // 初始化全域 Toast
+    useEffect(() => {
+        setToast(messageApi);
+    }, [messageApi]);
 
     // 檢測螢幕尺寸
     useEffect(() => {
@@ -112,11 +121,11 @@ function MainLayout() {
             <Layout style={{ minHeight: '100vh' }}>
                 {/* 桌面版側邊欄 */}
                 {!isMobile && (
-                    <Sider 
-                        collapsible 
+                    <Sider
+                        collapsible
                         collapsed={collapsed}
                         onCollapse={setCollapsed}
-                        breakpoint="lg"
+                        breakpoint="md"
                         collapsedWidth="0"
                         style={{
                             overflow: 'auto',
@@ -146,7 +155,7 @@ function MainLayout() {
                     </Drawer>
                 )}
 
-                <Layout 
+                <Layout
                     style={{
                         marginLeft: !isMobile && !collapsed ? 200 : 0,
                         transition: 'margin-left 0.2s',
@@ -176,7 +185,7 @@ function MainLayout() {
                             />
                         )}
 
-                        <h2 
+                        <h2
                             style={{
                                 fontSize: isMobile ? '16px' : '20px',
                                 position: 'absolute',
@@ -188,10 +197,10 @@ function MainLayout() {
                             Reminder
                         </h2>
 
-                        <div 
-                            style={{ 
-                                marginLeft: 'auto', 
-                                display: 'flex', 
+                        <div
+                            style={{
+                                marginLeft: 'auto',
+                                display: 'flex',
                                 gap: isMobile ? 4 : 8,
                                 alignItems: 'center',
                             }}
@@ -212,8 +221,8 @@ function MainLayout() {
                                 placement="bottomRight"
                                 trigger={['click']}
                             >
-                                <Button 
-                                    shape="circle" 
+                                <Button
+                                    shape="circle"
                                     icon={<BellOutlined />}
                                     type={isMobile ? 'text' : 'default'}
                                     size={isMobile ? 'small' : 'middle'}
@@ -223,26 +232,27 @@ function MainLayout() {
                     </Header>
 
                     {/* 主內容 */}
-                    <Content 
-                        style={{ 
+                    <Content
+                        style={{
                             margin: isMobile ? 8 : 16,
                             overflow: 'initial',
                         }}
                     >
-                        <div 
-                            style={{ 
-                                padding: isMobile ? 16 : 24, 
+                        {contextHolder}
+                        <div
+                            style={{
+                                padding: isMobile ? 16 : 24,
                                 minHeight: 360,
                                 borderRadius: 8,
                             }}
                         >
-                           <Outlet />
+                            <Outlet />
                         </div>
                     </Content>
 
                     {/* Footer */}
-                    <Footer 
-                        style={{ 
+                    <Footer
+                        style={{
                             textAlign: 'center',
                             fontSize: isMobile ? '12px' : '14px',
                             padding: isMobile ? '12px 0' : '24px 0',
@@ -268,6 +278,7 @@ function MainLayout() {
                 >
                     <p>登出後需要重新登入才能使用應用程式。</p>
                 </Modal>
+                <div className='toast-container'></div>
             </Layout>
         </ConfigProvider>
     );
