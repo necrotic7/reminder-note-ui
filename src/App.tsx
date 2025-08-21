@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import CreateReminder from './pages/CreateReminder';
-import MainLayout from './components/MainLayout';
+import MainLayout from './components/common/MainLayout';
 import Home from './pages/Home';
 import ReminderList from './pages/ReminderList';
 

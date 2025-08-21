@@ -8,7 +8,7 @@ import { FormHelper } from '../utils/form';
 import { CreateReminderApi } from '../apis/reminders';
 import moment from 'moment';
 import { useLocation } from 'react-router-dom';
-import UpsertReminder from '../components/UpsertReminder';
+import UpsertReminder from '../components/reminders/UpsertReminder';
 
 export default function CreateReminder() {
     const initForm: any = {};

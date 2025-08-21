@@ -68,6 +68,7 @@ export type RespGetRemindersBody = {
 };
 
 export type ReqGetReminderListBody = {
+    id?: string;
     userId: string;
     page?: number;
     pageSize?: number;

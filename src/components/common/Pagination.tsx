@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { ReqGetReminderListBody } from '../types/reminders';
+import { ReqGetReminderListBody } from '../../types/reminders';
 
 export function Pagination({
     currentPage,
@@ -82,11 +82,11 @@ export function Pagination({
         <div>
             {/* 總計資訊 */}
             {showTotal && (
-                <div className=" flex flex-col  items-center text-sm text-gray-600 p-4">
+                <div className=" flex flex-col items-center text-sm text-gray-600 p-4">
                     顯示 {start}-{end} 筆，共 {totalItems} 筆資料
                 </div>
             )}
-            <div className="flex flex-col  items-center gap-4 p-4">
+            <div className="flex flex-col items-center gap-4 p-4">
                 <div className="flex items-center gap-4">
                     {/* 每頁筆數選擇器 */}
                     {showSizeChanger && (

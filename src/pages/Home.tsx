@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { GetUserReminders } from '../apis/reminders';
-import RemindCalendar from '../components/RemindCalendar';
+import RemindCalendar from '../components/reminders/ReminderCalendar';
 import moment from 'moment';
 import { DateSelectArg, EventInput } from '@fullcalendar/core/index.js';
 import { useNavigate } from 'react-router-dom';
@@ -56,6 +56,8 @@ export default function Home() {
             },
         });
     };
+
+    // TODO 當事件被點選時，跳轉到編輯頁
 
     // 正常顯示
     return (

@@ -15,10 +15,10 @@ import {
 } from '../apis/reminders';
 import { FormHelper } from '../utils/form';
 import moment from 'moment';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
-import { Pagination } from '../components/Pagination';
-import UpsertReminder from '../components/UpsertReminder';
+import { Pagination } from '../components/common/Pagination';
+import UpsertReminder from '../components/reminders/UpsertReminder';
 
 export default function ReminderList() {
     const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function ReminderList() {
     // 初始化資料
     useEffect(() => {
         fetchReminders();
-    }, [navigate, reload, searchForm.page]);
+    }, [reload, searchForm.page]);
 
     // 刪除Reminder
     const deleteReminder = async () => {
@@ -88,7 +88,7 @@ export default function ReminderList() {
                     {reminderStates.map((r, idx) => (
                         <div
                             key={idx}
-                            className="card card-border border-gray-700 w-80 bg-base-100 card-sm shadow-sm"
+                            className="card-base"
                         >
                             <div className="card-body">
                                 <h2 className="card-title">{r.title}</h2>
@@ -213,7 +213,7 @@ function ReminderSearch({
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
-        <div className="card bg-base-100 shadow-sm p-4 mb-6 card-xs max-w-4xl mx-auto">
+        <div className="card-searchbar">
             {/* 頂部控制區 - 包含標題和按鈕 */}
             <div className="flex justify-between mb-4">
                 <h3 className="text-lg font-semibold">搜尋條件</h3>
@@ -347,12 +347,12 @@ function UpdateReminderModalForm({
 
     return (
         <div className="modal modal-open">
-            <div className="modal-box max-w-md shadow-xl">
+            <div className="modal-box max-w-md">
                 {/* 標題區域 */}
                 <div className="flex justify-end">
                     <button
                         onClick={handleClose}
-                        className="btn btn-sm btn-circle btn-ghost hover:bg-gray-100"
+                        className="btn btn-sm btn-circle btn-ghost hover:bg-primary"
                     >
                         <svg
                             className="w-5 h-5"

@@ -3,3 +3,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.card-base {
+  @apply card border-gray-700 w-80 bg-base-100 card-sm shadow-sm;
+}
+
+.card-searchbar {
+    @apply card bg-base-100 shadow-sm p-4 mb-6 card-xs max-w-4xl mx-auto
+}
+
+.form-fieldset {
+    @apply fieldset bg-base-100 border border-base-300 rounded-box w-xs p-4 mx-auto
+}

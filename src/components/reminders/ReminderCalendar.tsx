@@ -9,7 +9,7 @@ import {
     DateSelectArg,
     DatesSetArg,
 } from '@fullcalendar/core';
-import './RemindCalendar.css';
+import './ReminderCalendar.css';
 import listPlugin from '@fullcalendar/list';
 interface DaisyFullCalendarProps {
     events?: EventInput[];
@@ -63,8 +63,9 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
     };
 
     return (
+        <div className='w-full max-w-6xl mx-auto overflow-x-auto'>
         <div
-            className={`daisy-fullcalendar-container w-full max-w-6xl mx-auto ${className}`}
+            className={`daisy-fullcalendar-container min-w-[800px] ${className}`}
         >
             {/* 簡單的年月跳轉器 */}
             <DateJumpComponent ref={calendarRef} />
@@ -144,6 +145,7 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
                     />
                 </div>
             </div>
+        </div>
         </div>
     );
 };

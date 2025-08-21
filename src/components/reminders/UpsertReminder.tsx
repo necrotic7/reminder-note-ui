@@ -4,10 +4,10 @@ import {
     EnumReminderFrequency,
     EnumReminderFrequencyName,
     UpdateReminderForm,
-} from '../types/reminders';
+} from '../../types/reminders';
 import moment from 'moment';
-import { DaySelect } from './Date';
-import { TimePicker } from './TimePicker';
+import { DaySelect } from '../common/Date';
+import { TimePicker } from '../common/TimePicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect } from 'react';
 
@@ -56,7 +56,7 @@ export default function UpsertReminder({
     return (
         <div>
             <form className="space-y-4" onSubmit={onSubmit} key={resetKey}>
-                <fieldset className="fieldset bg-base-100 border border-base-300 rounded-box w-xs p-4 mx-auto">
+                <fieldset className="form-fieldset">
                     <legend className="fieldset-legend">{title}</legend>
 
                     <label className="label">標題</label>
