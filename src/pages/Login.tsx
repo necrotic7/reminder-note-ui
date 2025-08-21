@@ -22,7 +22,7 @@ function LoginPage() {
                 if (isLoggedIn) {
                     const profile = await liff.getProfile();
                     localStorage.setItem('lineId', profile.userId);
-                    navigate('/home');
+                    navigate('/');
                 } else {
                     setIsLoading(false);
                 }

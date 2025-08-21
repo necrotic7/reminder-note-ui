@@ -4,6 +4,7 @@ import './index.css';
 import App from './App.jsx';
 import liff from '@line/liff';
 import { BrowserRouter } from 'react-router-dom';
+import 'antd/dist/reset.css'; // 官方推薦 reset 版樣式
 
 async function initLiff() {
     try {
