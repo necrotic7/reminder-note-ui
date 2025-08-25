@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
     CreateReminderForm,
-    EnumReminderFrequency,
-    EnumReminderFrequencyName,
 } from '../types/reminders';
 import { FormHelper } from '../utils/form';
 import { CreateReminderApi } from '../apis/reminders';
-import moment from 'moment';
 import { useLocation } from 'react-router-dom';
 import UpsertReminder from '../components/reminders/UpsertReminder';
+import { EnumLocalStorageKey } from '../consts/localStorage';
+import dayjs from 'dayjs';
 
 export default function CreateReminder() {
     const initForm: any = {};
@@ -23,7 +22,7 @@ export default function CreateReminder() {
                 setField('frequency', location.state.frequency);
             }
             if (location.state.date) {
-                const date = moment(location.state.date);
+                const date = dayjs(location.state.date);
                 setField('fullDate', date.toDate());
                 setField('time', date.format('HH:mm'));
             }
@@ -32,7 +31,7 @@ export default function CreateReminder() {
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const lineId = localStorage.getItem('lineId');
+        const lineId = localStorage.getItem(EnumLocalStorageKey.LineID);
         form.userId = lineId ?? '';
         // 請求reminder-note-api
         const result = await CreateReminderApi(form);

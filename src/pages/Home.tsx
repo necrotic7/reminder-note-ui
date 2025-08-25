@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GetUserReminders } from '../apis/reminders';
 import RemindCalendar from '../components/reminders/ReminderCalendar';
-import moment from 'moment';
 import { DateSelectArg, EventInput } from '@fullcalendar/core/index.js';
 import { useNavigate } from 'react-router-dom';
 import { EnumReminderFrequency } from '../types/reminders';
+import { EnumLocalStorageKey } from '../consts/localStorage';
+import dayjs from 'dayjs';
 
 export default function Home() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ export default function Home() {
 
     const fetchRemindersToEvent = async (start: Date, end: Date) => {
         try {
-            const lineId = localStorage.getItem('lineId')!;
+            const lineId = localStorage.getItem(EnumLocalStorageKey.LineID)!;
             const resp = await GetUserReminders({
                 userId: lineId,
                 createStartTime: start,
@@ -22,7 +23,7 @@ export default function Home() {
             const events: EventInput[] =
                 resp?.data?.records?.map((data) => {
                     const { year, month, date, hour, minute } = data.remindTime;
-                    const startTime = moment(
+                    const startTime = dayjs(
                         `${year}-${month}-${date} ${hour}:${minute}:00`,
                     );
                     let endTime = startTime.clone().add(30, 'minutes');
@@ -46,7 +47,7 @@ export default function Home() {
     // 當日期格被點選時
     const onDateSelect = (info: DateSelectArg) => {
         let frequency = EnumReminderFrequency.Once;
-        if (moment(info.start).isBefore(moment())) {
+        if (dayjs(info.start).isBefore(dayjs())) {
             frequency = EnumReminderFrequency.Annually;
         }
         navigate('/createReminder', {

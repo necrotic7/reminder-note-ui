@@ -25,7 +25,6 @@
         "axios": "^1.11.0",
         "daisyui": "^5.0.48",
         "dayjs": "^1.11.13",
-        "moment": "^2.30.1",
         "react": "^19.1.0",
         "react-datepicker": "^8.4.0",
         "react-dom": "^19.1.0",

@@ -5,11 +5,11 @@ import {
     EnumReminderFrequencyName,
     UpdateReminderForm,
 } from '../../types/reminders';
-import moment from 'moment';
 import { DaySelect } from '../common/Date';
 import { TimePicker } from '../common/TimePicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useEffect } from 'react';
+import dayjs from 'dayjs';
 
 export default function UpsertReminder({
     title,
@@ -24,8 +24,8 @@ export default function UpsertReminder({
     onSubmit: (p: any) => void;
     resetKey?: number;
 }) {
-    const minDate = moment().startOf('day').toDate();
-    const currentYearStart = moment().startOf('year').toDate();
+    const minDate = dayjs().startOf('day').toDate();
+    const currentYearStart = dayjs().startOf('year').toDate();
 
     // 提醒頻率更動時，清空所有跟頻率相關的欄位
     useEffect(() => {

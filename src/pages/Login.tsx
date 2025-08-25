@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import liff from '@line/liff';
+import { EnumLocalStorageKey } from '../consts/localStorage';
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ function LoginPage() {
 
                 if (isLoggedIn) {
                     const profile = await liff.getProfile();
-                    localStorage.setItem('lineId', profile.userId);
+                    localStorage.setItem(EnumLocalStorageKey.LineID, profile.userId);
                     navigate('/');
                 } else {
                     setIsLoading(false);

@@ -1,4 +1,4 @@
-import { Layout, Menu, Button, Dropdown, Modal, message, App, ConfigProvider, theme, Drawer, Grid } from 'antd';
+import { Layout, Menu, Button, Dropdown, Modal, message, ConfigProvider, theme, Drawer, Grid } from 'antd';
 import {
     HomeOutlined,
     PlusOutlined,
@@ -8,7 +8,6 @@ import {
     LogoutOutlined,
     MoonOutlined,
     MenuOutlined,
-    StepBackwardOutlined,
 } from '@ant-design/icons';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import liff from '@line/liff';
@@ -18,6 +17,7 @@ import { red } from '@ant-design/colors';
 const { Header, Sider, Content, Footer } = Layout;
 
 import { setToast } from "./Toast";
+import { EnumLocalStorageKey } from '../../consts/localStorage';
 
 function MainLayout() {
     const navigate = useNavigate();
@@ -90,7 +90,7 @@ function MainLayout() {
                 }}
                 
             >
-                {collapsed ? '' : '你好，User'}
+                {collapsed ? '' : (<>你好，User<br/>id:{localStorage.getItem(EnumLocalStorageKey.LineID)}</>)}
             </div>
             <Menu
                 mode="inline"

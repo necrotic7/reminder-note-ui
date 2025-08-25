@@ -5,7 +5,6 @@ import {
     ReqGetReminderListBody,
     ReminderBody,
     RemindTimeBody,
-    ReqUpdateReminderBody,
     UpdateReminderForm,
 } from '../types/reminders';
 import {
@@ -14,15 +13,14 @@ import {
     UpdateReminderApi,
 } from '../apis/reminders';
 import { FormHelper } from '../utils/form';
-import moment from 'moment';
-import { useLocation, useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import { Pagination } from '../components/common/Pagination';
 import UpsertReminder from '../components/reminders/UpsertReminder';
+import { EnumLocalStorageKey } from '../consts/localStorage';
+import dayjs from 'dayjs';
 
 export default function ReminderList() {
-    const navigate = useNavigate();
-    const userId = localStorage.getItem('lineId')!;
+    const userId = localStorage.getItem(EnumLocalStorageKey.LineID)!;
     // 搜尋
     let { form: searchForm, setField: setSearchField } =
         FormHelper<ReqGetReminderListBody>({
@@ -103,7 +101,7 @@ export default function ReminderList() {
                                 </p>
                                 <p className="text-base-content/50">
                                     建立時間：
-                                    {moment(r.createdAt).format(
+                                    {dayjs(r.createdAt).format(
                                         'YYYY/MM/DD HH:mm:ss',
                                     )}
                                 </p>
@@ -121,14 +119,11 @@ export default function ReminderList() {
                                                 weekday:
                                                     r.remindTime.weekday.toString(),
                                                 date: r.remindTime.date.toString(),
-                                                time: moment()
-                                                    .set({
-                                                        hour: r.remindTime.hour,
-                                                        minute: r.remindTime
-                                                            .minute,
-                                                    })
+                                                time: dayjs()
+                                                    .hour(r.remindTime.hour)
+                                                    .minute(r.remindTime.minute)
                                                     .format('HH:mm'),
-                                                fullDate: moment(
+                                                fullDate: dayjs(
                                                     `${r.remindTime.year}-${r.remindTime.month}-${r.remindTime.date}`,
                                                 ).toDate(),
                                             });
@@ -386,13 +381,13 @@ function getFmtRemindTime(
     frequency: EnumReminderFrequency,
     remindTime: RemindTimeBody,
 ) {
-    let timeString = moment()
-        .set({ hour: remindTime.hour, minute: remindTime.minute })
+    let timeString = dayjs()
+        .hour(remindTime.hour).minute(remindTime.minute)
         .format('HH:mm');
     let dateString = '';
     switch (frequency) {
         case EnumReminderFrequency.Once:
-            dateString = moment(
+            dateString = dayjs(
                 `${remindTime.year}-${remindTime.month}-${remindTime.date}`,
             ).format('YYYY年MM月DD日');
             break;
@@ -412,7 +407,7 @@ function getFmtRemindTime(
             dateString = `${remindTime.date}日`;
             break;
         case EnumReminderFrequency.Annually:
-            dateString = moment(
+            dateString = dayjs(
                 `${remindTime.year}-${remindTime.month}-${remindTime.date}`,
             ).format('MM月DD日');
     }
