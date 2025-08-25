@@ -37,10 +37,6 @@ function MainLayout() {
         setToast(messageApi);
     }, [messageApi]);
 
-    useEffect(() => {
-        messageApi.info(`isMobile: ${isMobile}`)
-    }, [isMobile])
-
     const menuItems: ItemType<MenuItemType>[] = [
         {
             key: '/',

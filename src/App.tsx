@@ -4,8 +4,13 @@ import CreateReminder from './pages/CreateReminder';
 import MainLayout from './components/common/MainLayout';
 import Home from './pages/Home';
 import ReminderList from './pages/ReminderList';
+import { useEffect } from 'react';
 
 function App() {
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }, []);
+    // TODO 加上檢查登入機制
     return (
         <Routes>
             <Route path="/login" element={<LoginPage />} />
