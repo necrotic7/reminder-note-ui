@@ -1,31 +1,34 @@
-import DatePicker from 'react-datepicker';
 import {
     CreateReminderForm,
     EnumReminderFrequency,
     EnumReminderFrequencyName,
     UpdateReminderForm,
+    UpsertReminderForm,
 } from '../../types/reminders';
-import { DaySelect } from '../common/Date';
-import { TimePicker } from '../common/TimePicker';
+import { DaySelect, WeekdaySelect } from '../common/Date';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
+import { Button, Card, Form, Input, Layout, Select, TimePicker, DatePicker } from 'antd';
+import { AntdFormHelper, FormHelper } from '../../types/utils';
 
 export default function UpsertReminder({
     title,
-    form,
-    setField,
+    formUtil,
     onSubmit,
-    resetKey,
+    resetAfterSubmit = true,
 }: {
     title: string;
-    form: CreateReminderForm | UpdateReminderForm;
-    setField: (key: any, value: any) => void;
-    onSubmit: (p: any) => void;
-    resetKey?: number;
+    formUtil: FormHelper<UpsertReminderForm>;
+    onSubmit: (val: UpsertReminderForm) => void;
+    resetAfterSubmit?: boolean;
 }) {
-    const minDate = dayjs().startOf('day').toDate();
-    const currentYearStart = dayjs().startOf('year').toDate();
+    const { form, setForm, setField } = formUtil;
+    console.log(form)
+    const [key, setKey] = useState(0);
+    const minDate = dayjs().startOf('day');
+    const currentYearStart = dayjs().startOf('year');
+    const currentYearEnd = dayjs().endOf('year');
 
     // 提醒頻率更動時，清空所有跟頻率相關的欄位
     useEffect(() => {
@@ -53,133 +56,142 @@ export default function UpsertReminder({
         }
     }, [form.fullDate]);
 
+    const onFinish = () => {
+        onSubmit(form);
+        // 清空表單
+        if(resetAfterSubmit) {
+            setForm({} as any)
+            setKey((prev) => prev + 1);
+        };
+    }
+
     return (
-        <div>
-            <form className="space-y-4" onSubmit={onSubmit} key={resetKey}>
-                <fieldset className="form-fieldset">
-                    <legend className="fieldset-legend">{title}</legend>
-
-                    <label className="label">標題</label>
-                    <input
-                        type="text"
-                        className="input input-bordered"
-                        value={form.title}
-                        onChange={(e) => setField('title', e.target.value)}
-                        required
-                    />
-
-                    <label className="label">內容</label>
-                    <textarea
-                        className="textarea textarea-bordered"
-                        value={form.content}
-                        onChange={(e) => setField('content', e.target.value)}
-                    />
-
-                    <label className="label">提醒頻率</label>
-                    <select
-                        className="select select-bordered"
-                        defaultValue={''}
-                        value={form.frequency}
-                        onChange={(e) => setField('frequency', e.target.value)}
-                        required
+        <Layout style={{
+            display: 'flex',
+            alignItems: 'center',
+        }}>
+            <Card
+                title={title}
+                style={{ margin: 20, width: 500, }}>
+                <Form
+                    key={key}
+                    layout='vertical'
+                    variant={'filled'}
+                    onFinish={onFinish}
+                    // initialValues={form}
+                >
+                    <Form.Item
+                        label="標題"
+                        name="title"
+                        rules={[{ required: true }]}
                     >
-                        <option disabled value="">
-                            請選擇頻率
-                        </option>
-                        {Object.entries(EnumReminderFrequencyName).map(
-                            ([key, val]) => (
-                                <option value={key}>{val}</option>
-                            ),
-                        )}
-                    </select>
+                        <Input
+                            value={form.title}
+                            onChange={(e) => setField('title', e.target.value)}
+                        />
+                    </Form.Item>
 
-                    {/* 時間欄位 */}
-                    {form.frequency && (
-                        <>
-                            <label className="label">選擇時間</label>
-                            <TimePicker
-                                value={form.time}
-                                onChange={(val) => setField('time', val)}
-                            />
-                        </>
-                    )}
+                    <Form.Item
+                        label="內容"
+                        name="content"
+                        rules={[{ required: true }]}
+                    >
+                        <Input
+                            onChange={(e) => setField('content', e.target.value)}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="提醒頻率"
+                        name="frequency"
+                        rules={[{ required: true }]}
+                    >
+                        <Select<EnumReminderFrequency>
+                            
+                            onChange={(e) => setField('frequency', e)}
+                        >
+                            {Object.entries(EnumReminderFrequencyName).map(
+                                ([key, val]) => (
+                                    <Select.Option value={key}>{val}</Select.Option>
+                                ),
+                            )}
+                        </Select>
+                    </Form.Item>
+
+                    {form.frequency &&
+                    <Form.Item
+                        label='選擇時間'
+                        name='time'
+                        rules={[{ required: true }]}>
+                        <TimePicker
+                            use12Hours
+                            format='HH:mm'
+                            onChange={(val) => setField('time', val.format('HH:mm'))} />
+                    </Form.Item>}
 
                     {/* 各頻率對應欄位 */}
-                    {form.frequency === EnumReminderFrequency.Once && (
-                        <>
-                            <label className="label">選擇日期</label>
+                    {form.frequency === EnumReminderFrequency.Once && 
+                        <Form.Item
+                            label='選擇日期'
+                            name='fullDate'
+                            rules={[{ required: true }]}>
                             <DatePicker
                                 minDate={minDate}
-                                selected={form.fullDate}
+                                format='YYYY-MM-DD'
                                 onChange={(date) => {
                                     if (date) {
-                                        setField('fullDate', date);
+                                        setField('fullDate', date.toDate());
                                     }
-                                }}
-                                dateFormat="yyyy-MM-dd"
-                                className="input input-bordered w-full"
-                                placeholderText="請選擇日期"
-                            />
-                        </>
-                    )}
+                                }}>
+                            </DatePicker>
+                        </Form.Item>
+                    }
 
-                    {form.frequency === EnumReminderFrequency.Weekly && (
-                        <>
-                            <label className="label">選擇星期</label>
-                            <select
-                                className="select select-bordered"
-                                value={form.weekday!}
-                                onChange={(e) =>
-                                    setField('weekday', e.target.value)
-                                }
-                                required
-                            >
-                                <option disabled value="">
-                                    請選擇星期
-                                </option>
-                                {[...Array(7)].map((_, i) => (
-                                    <option
-                                        key={i}
-                                        value={i}
-                                    >{`星期${'日一二三四五六'[i]}`}</option>
-                                ))}
-                            </select>
-                        </>
-                    )}
+                    {form.frequency === EnumReminderFrequency.Weekly &&
+                    <Form.Item
+                        label='選擇星期'
+                        name='weekday'
+                        rules={[{ required: true }]}>
+                        <WeekdaySelect
+                        onChange={(e) => setField('weekday', e)}/>
+                            
+                    </Form.Item>}
 
-                    {form.frequency === EnumReminderFrequency.Monthly && (
-                        <>
-                            <label className="label">提醒日期</label>
-                            <DaySelect
-                                value={form.date!}
+                    {form.frequency === EnumReminderFrequency.Monthly &&
+                    <Form.Item
+                        label='選擇日期'
+                        name='date'
+                        rules={[{ required: true }]}>
+                        <DaySelect
                                 onChange={(val) => setField('date', val)}
                             />
-                        </>
-                    )}
+                    </Form.Item>}
 
-                    {form.frequency === EnumReminderFrequency.Annually && (
-                        <>
-                            <label className="label">選擇日期</label>
-                            <DatePicker
-                                minDate={currentYearStart}
-                                selected={form.fullDate}
-                                onChange={(date) => {
-                                    if (date) {
-                                        setField('fullDate', date);
-                                    }
-                                }}
-                                dateFormat="MM-dd"
-                                className="input input-bordered w-full"
-                                placeholderText="請選擇日期"
-                            />
-                        </>
-                    )}
+                    {form.frequency === EnumReminderFrequency.Annually &&
+                    <Form.Item
+                        label='選擇日期'
+                        name='date'
+                        rules={[{ required: true }]}>
+                        <DatePicker
+                            maxDate={currentYearEnd}
+                            minDate={currentYearStart}
+                            onChange={(date) => {
+                                if(date) {
+                                    setField('fullDate', date.toDate())
+                                }
+                            }}
+                            format='MM-DD'
+                        >
+                        </DatePicker>
+                    </Form.Item>}
 
-                    <button type="submit" className="btn btn-primary mt-4">
-                        送出
-                    </button>
-                </fieldset>
-            </form>
-        </div>
-    );
+                    <Form.Item style={{ textAlign: 'right' }}>
+                        <Button type="primary" htmlType="submit">
+                            送出
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Card>
+        </Layout>
+    )
 }

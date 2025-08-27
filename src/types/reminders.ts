@@ -1,3 +1,18 @@
+export type UpsertReminderForm = {
+    id?: string;
+    title: string;
+    content: string;
+    frequency: EnumReminderFrequency;
+    time: string;
+    hour: string;
+    minute: string;
+    weekday: string;
+    date: string;
+    month: string;
+    year: string;
+    fullDate: Date | null;
+};
+
 export type CreateReminderForm = {
     userId: string;
     title: string;

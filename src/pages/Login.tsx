@@ -14,9 +14,6 @@ function LoginPage() {
                 // 初始化 LIFF
                 await liff.init({ liffId: import.meta.env.VITE_LINE_LIFF_ID });
 
-                // 等待 LIFF 完全就緒
-                await new Promise((resolve) => setTimeout(resolve, 200));
-
                 // 檢查登入狀態
                 let isLoggedIn = liff.isLoggedIn();
 

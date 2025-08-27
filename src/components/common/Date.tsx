@@ -1,47 +1,33 @@
+import { Select } from "antd";
+
 export const DaySelect = ({
-    value,
     onChange,
 }: {
-    value: string;
     onChange: (val: number) => void;
 }) => (
-    <select
-        className="select select-bordered w-full"
-        defaultValue={''}
-        value={value}
-        onChange={(e) => onChange(parseInt(e.target.value))}
+    <Select<number>
+        onChange={(e) => onChange(e)}
     >
-        <option disabled value="">
-            選擇日期
-        </option>
         {[...Array(31)].map((_, i) => (
             <option key={i} value={i + 1}>
                 {i + 1} 日
             </option>
         ))}
-    </select>
+    </Select>
 );
 
-export const MonthSelect = ({
-    value,
+export const WeekdaySelect = ({
     onChange,
 }: {
-    value: string;
-    onChange: (val: string) => void;
+    onChange: (val: number) => void
 }) => (
-    <select
-        className="select select-bordered w-full"
-        defaultValue={''}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-    >
-        <option disabled value="">
-            選擇月份
-        </option>
-        {[...Array(12)].map((_, i) => (
-            <option key={i} value={i + 1}>
-                {i + 1} 月
-            </option>
-        ))}
-    </select>
-);
+<Select
+    onChange={(e) => onChange(e)}>
+    {[...Array(7)].map((_, i) => (
+        <Select.Option
+            key={i}
+            value={i}
+        >{`星期${'日一二三四五六'[i]}`}</Select.Option>
+    ))}
+</Select>)
+

@@ -6,24 +6,26 @@ import {
     ReminderBody,
     RemindTimeBody,
     UpdateReminderForm,
+    UpsertReminderForm,
 } from '../types/reminders';
 import {
     DeleteReminder,
     GetUserReminders,
     UpdateReminderApi,
 } from '../apis/reminders';
-import { FormHelper } from '../utils/form';
+import { useFormHelper } from '../utils/form';
 import DatePicker from 'react-datepicker';
 import { Pagination } from '../components/common/Pagination';
 import UpsertReminder from '../components/reminders/UpsertReminder';
 import { EnumLocalStorageKey } from '../consts/localStorage';
 import dayjs from 'dayjs';
+import { FormHelper } from '../types/utils';
 
 export default function ReminderList() {
     const userId = localStorage.getItem(EnumLocalStorageKey.LineID)!;
     // 搜尋
     let { form: searchForm, setField: setSearchField } =
-        FormHelper<ReqGetReminderListBody>({
+        useFormHelper<ReqGetReminderListBody>({
             userId,
             pageSize: 10,
         });
@@ -37,9 +39,7 @@ export default function ReminderList() {
         form: updateForm,
         setForm: setUpdateForm,
         setField: setUpdateField,
-    } = FormHelper<UpdateReminderForm>({
-        userId,
-    });
+    } = useFormHelper<UpsertReminderForm>({});
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     // 刷新
     const [reload, setReload] = useState<number>(0);
@@ -111,7 +111,6 @@ export default function ReminderList() {
                                         onClick={() => {
                                             setUpdateForm({
                                                 ...r,
-                                                userId,
                                                 hour: r.remindTime.hour.toString(),
                                                 minute: r.remindTime.minute.toString(),
                                                 year: r.remindTime.year.toString(),
@@ -176,9 +175,12 @@ export default function ReminderList() {
                     {showUpdateModal && (
                         <UpdateReminderModalForm
                             setModal={setShowUpdateModal}
-                            updateForm={updateForm}
-                            setField={setUpdateField}
                             setReload={setReload}
+                            formUtil={{
+                                form: updateForm,
+                                setForm: setUpdateForm,
+                                setField: setUpdateField,
+                            }}
                         />
                     )}
                 </div>
@@ -316,18 +318,22 @@ function ReminderSearch({
 
 function UpdateReminderModalForm({
     setModal,
-    updateForm,
-    setField,
     setReload,
+    formUtil,
 }: {
     setModal: (value: React.SetStateAction<boolean>) => void;
-    updateForm: UpdateReminderForm;
-    setField: (key: keyof UpdateReminderForm, value: any) => void;
     setReload: (value: React.SetStateAction<number>) => void;
+    formUtil: FormHelper<UpsertReminderForm>
 }) {
     const handleSubmit = async (e) => {
         try {
             e.preventDefault();
+            const lineId = localStorage.getItem(EnumLocalStorageKey.LineID);
+            const updateForm: UpdateReminderForm = {
+                userId: lineId!,
+                id: formUtil.form.id!,
+                ...formUtil.form,
+            }
             await UpdateReminderApi(updateForm);
             setModal(false);
             setReload((pre) => pre + 1);
@@ -366,8 +372,7 @@ function UpdateReminderModalForm({
                 </div>
                 <UpsertReminder
                     title="編輯提醒"
-                    form={updateForm}
-                    setField={setField}
+                    formUtil={formUtil}
                     onSubmit={handleSubmit}
                 />
             </div>

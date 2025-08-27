@@ -75,7 +75,6 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
                         {/* 簡單的年月跳轉器 */}
                         <DateJumpComponent ref={calendarRef} />
                         <Card>
-                            <div className="card-body">
                                 <FullCalendar
                                     defaultTimedEventDuration={'00:30'}
                                     ref={calendarRef}
@@ -151,7 +150,6 @@ const RemindCalendar: React.FC<DaisyFullCalendarProps> = ({
                                     }}
                                     displayEventEnd={false}
                                 />
-                            </div>
                         </Card>
                     </Col>
                 </Row>
