@@ -1,9 +1,9 @@
 import { Select } from "antd";
 
 export const DaySelect = ({
-    onChange,
+    onChange = () => {},
 }: {
-    onChange: (val: number) => void;
+    onChange?: (val: number) => void;
 }) => (
     <Select<number>
         onChange={(e) => onChange(e)}
@@ -17,9 +17,9 @@ export const DaySelect = ({
 );
 
 export const WeekdaySelect = ({
-    onChange,
+    onChange = () => {},
 }: {
-    onChange: (val: number) => void
+    onChange?: (val: number) => void
 }) => (
 <Select
     onChange={(e) => onChange(e)}>

@@ -1,69 +1,35 @@
 import {
-    CreateReminderForm,
     EnumReminderFrequency,
     EnumReminderFrequencyName,
-    UpdateReminderForm,
     UpsertReminderForm,
 } from '../../types/reminders';
 import { DaySelect, WeekdaySelect } from '../common/Date';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { Button, Card, Form, Input, Layout, Select, TimePicker, DatePicker } from 'antd';
-import { AntdFormHelper, FormHelper } from '../../types/utils';
+import { FormProps, useForm } from 'antd/es/form/Form';
+
 
 export default function UpsertReminder({
     title,
-    formUtil,
     onSubmit,
-    resetAfterSubmit = true,
 }: {
     title: string;
-    formUtil: FormHelper<UpsertReminderForm>;
     onSubmit: (val: UpsertReminderForm) => void;
-    resetAfterSubmit?: boolean;
 }) {
-    const { form, setForm, setField } = formUtil;
-    console.log(form)
-    const [key, setKey] = useState(0);
+    const [form] = useForm<UpsertReminderForm>();
+    
     const minDate = dayjs().startOf('day');
     const currentYearStart = dayjs().startOf('year');
     const currentYearEnd = dayjs().endOf('year');
 
-    // 提醒頻率更動時，清空所有跟頻率相關的欄位
-    useEffect(() => {
-        setField('year', '');
-        setField('month', '');
-        setField('date', '');
-        setField('weekday', '');
-    }, [form.frequency]);
+    const onFinish: FormProps<UpsertReminderForm>['onFinish'] = (values) => {
+        console.log('Success:', values);
+        onSubmit(values);
+        form.resetFields();
+    };
 
-    // time異動時，解析時間
-    useEffect(() => {
-        if (form.time) {
-            const [hr, min] = form.time.split(':');
-            setField('hour', Number(hr));
-            setField('minute', Number(min));
-        }
-    }, [form.time]);
-
-    // fullDate異動時，解析時間
-    useEffect(() => {
-        if (form.fullDate) {
-            setField('year', form.fullDate.getFullYear());
-            setField('month', form.fullDate.getMonth() + 1);
-            setField('date', form.fullDate.getDate());
-        }
-    }, [form.fullDate]);
-
-    const onFinish = () => {
-        onSubmit(form);
-        // 清空表單
-        if(resetAfterSubmit) {
-            setForm({} as any)
-            setKey((prev) => prev + 1);
-        };
-    }
+    const frequency = Form.useWatch('frequency', form);
 
     return (
         <Layout style={{
@@ -74,11 +40,11 @@ export default function UpsertReminder({
                 title={title}
                 style={{ margin: 20, width: 500, }}>
                 <Form
-                    key={key}
                     layout='vertical'
                     variant={'filled'}
                     onFinish={onFinish}
-                    // initialValues={form}
+                    form={form}
+                    initialValues={{}}
                 >
                     <Form.Item
                         label="標題"
@@ -86,8 +52,6 @@ export default function UpsertReminder({
                         rules={[{ required: true }]}
                     >
                         <Input
-                            value={form.title}
-                            onChange={(e) => setField('title', e.target.value)}
                         />
                     </Form.Item>
 
@@ -97,7 +61,6 @@ export default function UpsertReminder({
                         rules={[{ required: true }]}
                     >
                         <Input
-                            onChange={(e) => setField('content', e.target.value)}
                         />
                     </Form.Item>
 
@@ -107,8 +70,6 @@ export default function UpsertReminder({
                         rules={[{ required: true }]}
                     >
                         <Select<EnumReminderFrequency>
-                            
-                            onChange={(e) => setField('frequency', e)}
                         >
                             {Object.entries(EnumReminderFrequencyName).map(
                                 ([key, val]) => (
@@ -118,7 +79,7 @@ export default function UpsertReminder({
                         </Select>
                     </Form.Item>
 
-                    {form.frequency &&
+                    {frequency &&
                     <Form.Item
                         label='選擇時間'
                         name='time'
@@ -126,11 +87,11 @@ export default function UpsertReminder({
                         <TimePicker
                             use12Hours
                             format='HH:mm'
-                            onChange={(val) => setField('time', val.format('HH:mm'))} />
+                             />
                     </Form.Item>}
 
                     {/* 各頻率對應欄位 */}
-                    {form.frequency === EnumReminderFrequency.Once && 
+                    {frequency === EnumReminderFrequency.Once && 
                         <Form.Item
                             label='選擇日期'
                             name='fullDate'
@@ -138,47 +99,37 @@ export default function UpsertReminder({
                             <DatePicker
                                 minDate={minDate}
                                 format='YYYY-MM-DD'
-                                onChange={(date) => {
-                                    if (date) {
-                                        setField('fullDate', date.toDate());
-                                    }
-                                }}>
+                                >
                             </DatePicker>
                         </Form.Item>
                     }
 
-                    {form.frequency === EnumReminderFrequency.Weekly &&
+                    {frequency === EnumReminderFrequency.Weekly &&
                     <Form.Item
                         label='選擇星期'
                         name='weekday'
                         rules={[{ required: true }]}>
-                        <WeekdaySelect
-                        onChange={(e) => setField('weekday', e)}/>
+                        <WeekdaySelect/>
                             
                     </Form.Item>}
 
-                    {form.frequency === EnumReminderFrequency.Monthly &&
+                    {frequency === EnumReminderFrequency.Monthly &&
                     <Form.Item
                         label='選擇日期'
                         name='date'
                         rules={[{ required: true }]}>
-                        <DaySelect
-                                onChange={(val) => setField('date', val)}
-                            />
+                        <DaySelect/>
                     </Form.Item>}
 
-                    {form.frequency === EnumReminderFrequency.Annually &&
+                    {frequency === EnumReminderFrequency.Annually &&
                     <Form.Item
                         label='選擇日期'
-                        name='date'
+                        name='fullDate'
                         rules={[{ required: true }]}>
                         <DatePicker
                             maxDate={currentYearEnd}
                             minDate={currentYearStart}
                             onChange={(date) => {
-                                if(date) {
-                                    setField('fullDate', date.toDate())
-                                }
                             }}
                             format='MM-DD'
                         >

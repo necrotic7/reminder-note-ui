@@ -1,16 +1,14 @@
+import dayjs from "dayjs";
+
 export type UpsertReminderForm = {
     id?: string;
     title: string;
     content: string;
     frequency: EnumReminderFrequency;
-    time: string;
-    hour: string;
-    minute: string;
-    weekday: string;
-    date: string;
-    month: string;
-    year: string;
-    fullDate: Date | null;
+    time: dayjs.Dayjs;
+    weekday?: number;
+    date?: number;
+    fullDate?: dayjs.Dayjs;
 };
 
 export type CreateReminderForm = {
@@ -18,14 +16,12 @@ export type CreateReminderForm = {
     title: string;
     content: string;
     frequency: EnumReminderFrequency;
-    time: string;
-    hour: string;
+    hour: number;
     minute: string;
     weekday: string;
     date: string;
     month: string;
     year: string;
-    fullDate: Date | null;
 };
 
 export type ReqCreateReminderBody = {
@@ -39,10 +35,10 @@ export type ReqCreateReminderBody = {
 export type RemindTimeBody = {
     hour: number;
     minute: number;
-    weekday: number;
-    date: number;
-    month: number;
-    year: number;
+    weekday?: number;
+    date?: number;
+    month?: number;
+    year?: number;
 };
 
 export enum EnumReminderFrequency {

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
     CreateReminderForm,
+    EnumReminderFrequency,
+    ReqCreateReminderBody,
     UpsertReminderForm,
 } from '../types/reminders';
-import { useAntdFormHelper, useFormHelper } from '../utils/form';
+import { useFormHelper } from '../utils/form';
 import { CreateReminderApi } from '../apis/reminders';
 import { useLocation } from 'react-router-dom';
 import UpsertReminder from '../components/reminders/UpsertReminder';
@@ -31,20 +33,15 @@ export default function CreateReminder() {
         }
     }, [location.state]);
 
-    const submit = async (values: UpsertReminderForm) => {
+    const submit = async (form: UpsertReminderForm) => {
         const lineId = localStorage.getItem(EnumLocalStorageKey.LineID);
-        const form: CreateReminderForm = {
-            userId: lineId!,
-            ...values,
-        }
         // 請求reminder-note-api
-        const result = await CreateReminderApi(form);
+        await CreateReminderApi(lineId!, form);
     };
 
     return (
         <UpsertReminder
             title="新增提醒"
-            formUtil={formUtil}
             onSubmit={submit}
         />
     );

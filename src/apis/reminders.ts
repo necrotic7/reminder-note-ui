@@ -7,24 +7,26 @@ import {
     RespGetRemindersBody,
     UpdateReminderForm,
     ReqUpdateReminderBody,
+    UpsertReminderForm,
+    EnumReminderFrequency,
 } from '../types/reminders';
 import { DateToUnix } from '../utils/common';
 import { ReminderNoteApi } from './api';
 
-export async function CreateReminderApi(data: CreateReminderForm) {
+export async function CreateReminderApi(userId: string, form: UpsertReminderForm) {
     try {
         const payload: ReqCreateReminderBody = {
-            userId: data.userId,
-            title: data.title,
-            content: data.content,
-            frequency: data.frequency,
+            userId,
+            title: form.title,
+            content: form.content,
+            frequency: form.frequency,
             remindTime: {
-                hour: safeParseInt(data.hour),
-                minute: safeParseInt(data.minute),
-                weekday: safeParseInt(data.weekday),
-                date: safeParseInt(data.date),
-                month: safeParseInt(data.month),
-                year: safeParseInt(data.year),
+                hour: form.time.hour(),
+                minute: form.time.minute(),
+                weekday: form?.weekday,
+                date: (form.frequency == EnumReminderFrequency.Monthly) ? form.date : form.fullDate?.date(),
+                month: form.fullDate?.month() ? form.fullDate.month() + 1 : undefined,
+                year: form.fullDate?.year(),
             },
         };
         await ReminderNoteApi.post('/reminders', payload);
