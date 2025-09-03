@@ -53,8 +53,10 @@ export default function UpsertReminder({
                     variant={'filled'}
                     onFinish={onFinish}
                     form={form}
-                    initialValues={{}}
                 >
+                    <Form.Item name="id" hidden>
+                        <Input type="hidden" />
+                    </Form.Item>
                     <Form.Item
                         label="標題"
                         name="title"
