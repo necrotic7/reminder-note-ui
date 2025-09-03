@@ -35,11 +35,7 @@ export default function ReminderList() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
     // 編輯
-    let {
-        form: updateForm,
-        setForm: setUpdateForm,
-        setField: setUpdateField,
-    } = useFormHelper<UpsertReminderForm>({});
+    let [updateReminder, setUpdateReminder] = useState<ReminderBody>();
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     // 刷新
     const [reload, setReload] = useState<number>(0);
@@ -109,23 +105,7 @@ export default function ReminderList() {
                                     <button
                                         className="btn btn-primary btn-sm btn-soft"
                                         onClick={() => {
-                                            setUpdateForm({
-                                                ...r,
-                                                hour: r.remindTime.hour.toString(),
-                                                minute: r.remindTime.minute.toString(),
-                                                year: r.remindTime.year.toString(),
-                                                month: r.remindTime.month.toString(),
-                                                weekday:
-                                                    r.remindTime.weekday.toString(),
-                                                date: r.remindTime.date.toString(),
-                                                time: dayjs()
-                                                    .hour(r.remindTime.hour)
-                                                    .minute(r.remindTime.minute)
-                                                    .format('HH:mm'),
-                                                fullDate: dayjs(
-                                                    `${r.remindTime.year}-${r.remindTime.month}-${r.remindTime.date}`,
-                                                ).toDate(),
-                                            });
+                                            setUpdateReminder(r);
                                             setShowUpdateModal(true);
                                         }}
                                     >
@@ -176,11 +156,7 @@ export default function ReminderList() {
                         <UpdateReminderModalForm
                             setModal={setShowUpdateModal}
                             setReload={setReload}
-                            formUtil={{
-                                form: updateForm,
-                                setForm: setUpdateForm,
-                                setField: setUpdateField,
-                            }}
+                            updateReminderBody={updateReminder}
                         />
                     )}
                 </div>
@@ -319,22 +295,44 @@ function ReminderSearch({
 function UpdateReminderModalForm({
     setModal,
     setReload,
-    formUtil,
+    updateReminderBody,
 }: {
     setModal: (value: React.SetStateAction<boolean>) => void;
     setReload: (value: React.SetStateAction<number>) => void;
-    formUtil: FormHelper<UpsertReminderForm>
+    updateReminderBody?: ReminderBody;
 }) {
-    const handleSubmit = async (e) => {
+
+    let upsertReminderForm: Partial<UpsertReminderForm> = {};
+    if (updateReminderBody) {
+        const { remindTime } = updateReminderBody;
+        const now = dayjs();
+        let fullDate: dayjs.Dayjs | undefined;
+        if (remindTime.year) {
+            fullDate = now.year(remindTime.year);
+        }
+        if (remindTime.month) {
+            fullDate = now.month(remindTime.month);
+        }
+        if (remindTime.date) {
+            fullDate = now.date(remindTime.date);
+        }
+        
+        upsertReminderForm = {
+            id: updateReminderBody.id,
+            title: updateReminderBody.title,
+            content: updateReminderBody.content,
+            frequency: updateReminderBody.frequency,
+            weekday: remindTime.weekday,
+            date: remindTime.date,
+            time: dayjs().hour(remindTime.hour).minute(remindTime.minute),
+            fullDate,
+        };
+    }
+    
+    const handleSubmit = async (v: UpsertReminderForm) => {
         try {
-            e.preventDefault();
             const lineId = localStorage.getItem(EnumLocalStorageKey.LineID);
-            const updateForm: UpdateReminderForm = {
-                userId: lineId!,
-                id: formUtil.form.id!,
-                ...formUtil.form,
-            }
-            await UpdateReminderApi(updateForm);
+            await UpdateReminderApi(lineId!, v);
             setModal(false);
             setReload((pre) => pre + 1);
         } catch (err) {
@@ -372,7 +370,7 @@ function UpdateReminderModalForm({
                 </div>
                 <UpsertReminder
                     title="編輯提醒"
-                    formUtil={formUtil}
+                    initialValues={upsertReminderForm}
                     onSubmit={handleSubmit}
                 />
             </div>
@@ -406,7 +404,7 @@ function getFmtRemindTime(
                 '星期五',
                 '星期六',
             ];
-            dateString = weekdays[remindTime.weekday];
+            dateString = weekdays[remindTime.weekday!];
             break;
         case EnumReminderFrequency.Monthly:
             dateString = `${remindTime.date}日`;

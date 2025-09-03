@@ -138,8 +138,6 @@ export default function UpsertReminder({
                             <DatePicker
                                 maxDate={currentYearEnd}
                                 minDate={currentYearStart}
-                                onChange={(date) => {
-                                }}
                                 format='MM-DD'
                             >
                             </DatePicker>

@@ -1,12 +1,8 @@
 import { Select } from "antd";
 
-export const DaySelect = ({
-    onChange = () => {},
-}: {
-    onChange?: (val: number) => void;
-}) => (
+export const DaySelect = (props: any) => (
     <Select<number>
-        onChange={(e) => onChange(e)}
+        {...props}
     >
         {[...Array(31)].map((_, i) => (
             <option key={i} value={i + 1}>
@@ -16,13 +12,8 @@ export const DaySelect = ({
     </Select>
 );
 
-export const WeekdaySelect = ({
-    onChange = () => {},
-}: {
-    onChange?: (val: number) => void
-}) => (
-<Select
-    onChange={(e) => onChange(e)}>
+export const WeekdaySelect = (props: any) => (
+<Select {...props}>
     {[...Array(7)].map((_, i) => (
         <Select.Option
             key={i}

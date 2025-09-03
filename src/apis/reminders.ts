@@ -39,21 +39,21 @@ export async function CreateReminderApi(userId: string, form: UpsertReminderForm
     }
 }
 
-export async function UpdateReminderApi(data: UpdateReminderForm) {
+export async function UpdateReminderApi(userId: string, form: UpsertReminderForm) {
     try {
         const payload: ReqUpdateReminderBody = {
-            id: data.id,
-            userId: data.userId,
-            title: data.title,
-            content: data.content,
-            frequency: data.frequency,
+            id: form.id!,
+            userId: userId,
+            title: form.title,
+            content: form.content,
+            frequency: form.frequency,
             remindTime: {
-                hour: safeParseInt(data.hour),
-                minute: safeParseInt(data.minute),
-                weekday: safeParseInt(data.weekday),
-                date: safeParseInt(data.date),
-                month: safeParseInt(data.month),
-                year: safeParseInt(data.year),
+                hour: form.time.hour(),
+                minute: form.time.minute(),
+                weekday: form?.weekday,
+                date: (form.frequency == EnumReminderFrequency.Monthly) ? form.date : form.fullDate?.date(),
+                month: form.fullDate?.month() ? form.fullDate.month() + 1 : undefined,
+                year: form.fullDate?.year(),
             },
         };
         await ReminderNoteApi.put('/reminders', payload);
