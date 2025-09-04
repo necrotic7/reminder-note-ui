@@ -3,9 +3,10 @@ import {
 } from '../types/reminders';
 import { CreateReminderApi } from '../apis/reminders';
 import { useLocation } from 'react-router-dom';
-import UpsertReminder from '../components/reminders/UpsertReminder';
+import ComponentUpsertReminderForm from '../components/reminders/UpsertReminderForm';
 import { EnumLocalStorageKey } from '../consts/localStorage';
 import dayjs from 'dayjs';
+import { Card, Layout } from 'antd';
 
 export default function CreateReminder() {
     // 填入navigation帶進來的參數
@@ -33,10 +34,18 @@ export default function CreateReminder() {
     };
 
     return (
-        <UpsertReminder
-            title="新增提醒"
-            onSubmit={submit}
-            initialValues={buildInitialValues()}
-        />
+        <Layout style={{
+            display: 'flex',
+            alignItems: 'center',
+        }}>
+            <Card
+                title="新增提醒"
+                style={{ margin: 20, width: 500, }}>
+                <ComponentUpsertReminderForm
+                    onSubmit={submit}
+                    initialValues={buildInitialValues()}
+                />
+            </Card>
+        </Layout>
     );
 }

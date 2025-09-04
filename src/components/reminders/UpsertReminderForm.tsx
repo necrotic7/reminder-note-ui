@@ -11,12 +11,10 @@ import { FormProps, useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
 
 
-export default function UpsertReminder({
-    title,
+export default function ComponentUpsertReminderForm({
     onSubmit,
     initialValues,
 }: {
-    title: string;
     onSubmit: (val: UpsertReminderForm) => void;
     initialValues?: Partial<UpsertReminderForm>;
 }) {
@@ -33,6 +31,7 @@ export default function UpsertReminder({
 
     useEffect(() => {
         if (initialValues) {
+            console.log('init:', initialValues)
             form.setFieldsValue(initialValues);
         }
     }, [initialValues]);
@@ -41,13 +40,6 @@ export default function UpsertReminder({
     const frequency = Form.useWatch('frequency', form);
 
     return (
-        <Layout style={{
-            display: 'flex',
-            alignItems: 'center',
-        }}>
-            <Card
-                title={title}
-                style={{ margin: 20, width: 500, }}>
                 <Form
                     layout='vertical'
                     variant={'filled'}
@@ -151,7 +143,5 @@ export default function UpsertReminder({
                         </Button>
                     </Form.Item>
                 </Form>
-            </Card>
-        </Layout>
     )
 }

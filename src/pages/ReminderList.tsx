@@ -5,7 +5,6 @@ import {
     ReqGetReminderListBody,
     ReminderBody,
     RemindTimeBody,
-    UpdateReminderForm,
     UpsertReminderForm,
 } from '../types/reminders';
 import {
@@ -16,10 +15,10 @@ import {
 import { useFormHelper } from '../utils/form';
 import DatePicker from 'react-datepicker';
 import { Pagination } from '../components/common/Pagination';
-import UpsertReminder from '../components/reminders/UpsertReminder';
+import ComponentUpsertReminderForm from '../components/reminders/UpsertReminderForm';
 import { EnumLocalStorageKey } from '../consts/localStorage';
 import dayjs from 'dayjs';
-import { FormHelper } from '../types/utils';
+import { Button, Card, Col, Layout, Modal, Row } from 'antd';
 
 export default function ReminderList() {
     const userId = localStorage.getItem(EnumLocalStorageKey.LineID)!;
@@ -71,96 +70,86 @@ export default function ReminderList() {
     };
 
     return (
-        <div>
+        <Layout style={{
+            display: 'flex',
+            alignItems: 'center',
+        }}>
             <ReminderSearch
                 onSearch={fetchReminders}
                 form={searchForm}
                 setField={setSearchField}
             />
-            <div className="flex justify-center">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {reminderStates.map((r, idx) => (
-                        <div
-                            key={idx}
-                            className="card-base"
+            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} >
+                {reminderStates.map((r, idx) => (
+                    <Col xs={24} sm={12} key={idx} >
+                        <Card
+                            title={r.title} style={{ margin: 15 }}
+                            actions={[
+                                <Button
+                                    color='primary'
+                                    variant='outlined'
+                                    onClick={() => {
+                                        setUpdateReminder(r);
+                                        setShowUpdateModal(true);
+                                    }}
+                                >
+                                    編輯
+                                </Button>,
+                                <Button
+                                    danger
+                                    onClick={() => {
+                                        setDeleteId(r.id);
+                                        setShowDeleteModal(true);
+                                    }}
+                                >
+                                    刪除
+                                </Button>
+                            ]}
                         >
-                            <div className="card-body">
-                                <h2 className="card-title">{r.title}</h2>
-                                <p>{r.content}</p>
-                                <p>
-                                    {EnumReminderFrequencyName[r.frequency]}{' '}
-                                    {getFmtRemindTime(
-                                        r.frequency,
-                                        r.remindTime,
-                                    )}{' '}
-                                    提醒
-                                </p>
-                                <p className="text-base-content/50">
-                                    建立時間：
-                                    {dayjs(r.createdAt).format(
-                                        'YYYY/MM/DD HH:mm:ss',
-                                    )}
-                                </p>
-                                <div className="justify-end card-actions">
-                                    <button
-                                        className="btn btn-primary btn-sm btn-soft"
-                                        onClick={() => {
-                                            setUpdateReminder(r);
-                                            setShowUpdateModal(true);
-                                        }}
-                                    >
-                                        編輯
-                                    </button>
-                                    <button
-                                        className="btn btn-error btn-sm btn-soft"
-                                        onClick={() => {
-                                            setDeleteId(r.id);
-                                            setShowDeleteModal(true);
-                                        }}
-                                    >
-                                        刪除
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                    {showDeleteModal && (
-                        <div className="modal modal-open">
-                            <div className="modal-box">
-                                <h3 className="font-bold text-lg">確認刪除</h3>
-                                <p className="py-4">你確定要刪除這筆提醒嗎？</p>
-                                <div className="modal-action">
-                                    <button
-                                        className="btn"
-                                        onClick={() =>
-                                            setShowDeleteModal(false)
-                                        }
-                                    >
-                                        取消
-                                    </button>
-                                    <button
-                                        className="btn btn-error"
-                                        onClick={() => {
-                                            deleteReminder();
-                                            setShowDeleteModal(false);
-                                            setDeleteId(null);
-                                        }}
-                                    >
-                                        確定刪除
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {showUpdateModal && (
-                        <UpdateReminderModalForm
-                            setModal={setShowUpdateModal}
-                            setReload={setReload}
-                            updateReminderBody={updateReminder}
-                        />
-                    )}
-                </div>
-            </div>
+                            <p>{r.content}</p>
+                            <p>
+                                {EnumReminderFrequencyName[r.frequency]}{' '}
+                                {getFmtRemindTime(
+                                    r.frequency,
+                                    r.remindTime,
+                                )}{' '}
+                                提醒
+                            </p>
+                            <p style={{ color: '#8c8c8c' }}>
+                                建立時間：
+                                {dayjs(r.createdAt).format(
+                                    'YYYY/MM/DD HH:mm:ss',
+                                )}
+                            </p>
+                        </Card>
+                    </Col>
+                ))}
+                <Modal
+                    title="刪除"
+                    open={showDeleteModal}
+                    onCancel={() => setShowDeleteModal(false)}
+                    onOk={() => {
+                        deleteReminder();
+                        setShowDeleteModal(false);
+                        setDeleteId(null);
+                    }}
+                >
+                    <p >你確定要刪除這筆提醒嗎？</p>
+                </Modal>
+                <Modal
+                    title="編輯提醒"
+                    open={showUpdateModal}
+                    onCancel={() => setShowUpdateModal(false)}
+                    footer={null}
+                    >
+                    <UpdateReminderModalForm
+                        setModal={setShowUpdateModal}
+                        setReload={setReload}
+                        updateReminderBody={updateReminder}
+                    />
+                </Modal>
+
+            </Row>
             {/* 分頁元件 */}
             <Pagination
                 currentPage={searchForm.page ?? 1}
@@ -170,7 +159,7 @@ export default function ReminderList() {
                 showSizeChanger
                 showTotal
             />
-        </div>
+        </Layout>
     );
 }
 
@@ -297,7 +286,7 @@ function UpdateReminderModalForm({
     setReload,
     updateReminderBody,
 }: {
-    setModal: (value: React.SetStateAction<boolean>) => void;
+    setModal: (value: React.SetStateAction<boolean>) => void
     setReload: (value: React.SetStateAction<number>) => void;
     updateReminderBody?: ReminderBody;
 }) {
@@ -316,7 +305,7 @@ function UpdateReminderModalForm({
         if (remindTime.date) {
             fullDate = now.date(remindTime.date);
         }
-        
+
         upsertReminderForm = {
             id: updateReminderBody.id,
             title: updateReminderBody.title,
@@ -328,55 +317,23 @@ function UpdateReminderModalForm({
             fullDate,
         };
     }
-    
+
     const handleSubmit = async (v: UpsertReminderForm) => {
         try {
             const lineId = localStorage.getItem(EnumLocalStorageKey.LineID);
             await UpdateReminderApi(lineId!, v);
-            setModal(false);
+            setModal(false)
             setReload((pre) => pre + 1);
         } catch (err) {
             console.log(`更新提醒失敗：`, err);
         }
     };
 
-    const handleClose = () => {
-        setModal(false);
-    };
-
     return (
-        <div className="modal modal-open">
-            <div className="modal-box max-w-md">
-                {/* 標題區域 */}
-                <div className="flex justify-end">
-                    <button
-                        onClick={handleClose}
-                        className="btn btn-sm btn-circle btn-ghost hover:bg-primary"
-                    >
-                        <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                </div>
-                <UpsertReminder
-                    title="編輯提醒"
-                    initialValues={upsertReminderForm}
-                    onSubmit={handleSubmit}
-                />
-            </div>
-            {/* 點擊外部關閉 - 移到modal-box外面 */}
-            <div className="modal-backdrop" onClick={handleClose}></div>
-        </div>
+        <ComponentUpsertReminderForm
+            initialValues={upsertReminderForm}
+            onSubmit={handleSubmit}
+        />
     );
 }
 
