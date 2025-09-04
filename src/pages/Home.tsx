@@ -15,10 +15,9 @@ export default function Home() {
     const fetchRemindersToEvent = async (start: Date, end: Date) => {
         try {
             const lineId = localStorage.getItem(EnumLocalStorageKey.LineID)!;
-            const resp = await GetUserReminders({
-                userId: lineId,
-                createStartTime: start,
-                createEndTime: end,
+            const resp = await GetUserReminders(lineId,{
+                createStartTime: dayjs(start),
+                createEndTime: dayjs(end),
             });
             const events: EventInput[] =
                 resp?.data?.records?.map((data) => {

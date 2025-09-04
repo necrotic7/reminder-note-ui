@@ -80,11 +80,10 @@ export type RespGetRemindersBody = {
 
 export type ReqGetReminderListBody = {
     id?: string;
-    userId: string;
     page?: number;
     pageSize?: number;
-    createStartTime?: Date;
-    createEndTime?: Date;
+    createStartTime?: dayjs.Dayjs;
+    createEndTime?: dayjs.Dayjs;
     title?: string;
     content?: string;
     frequency?: EnumReminderFrequency;

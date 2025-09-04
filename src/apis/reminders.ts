@@ -66,10 +66,10 @@ export async function UpdateReminderApi(userId: string, form: UpsertReminderForm
     }
 }
 
-export async function GetUserReminders(params: ReqGetReminderListBody) {
+export async function GetUserReminders(userId: string, params: ReqGetReminderListBody) {
     try {
         const queryParams = new URLSearchParams();
-        queryParams.set('userId', params.userId);
+        queryParams.set('userId', userId);
 
         if (params.page) {
             queryParams.set('page', params.page.toString());
@@ -78,12 +78,12 @@ export async function GetUserReminders(params: ReqGetReminderListBody) {
             queryParams.set('pageSize', params.pageSize.toString());
         }
         if (params.createStartTime) {
-            const st = DateToUnix(params.createStartTime);
-            queryParams.set('startTime', st.toString());
+            const st = params.createStartTime.unix();
+            queryParams.set('createStartTime', st.toString());
         }
         if (params.createEndTime) {
-            const et = DateToUnix(params.createEndTime);
-            queryParams.set('endTime', et.toString());
+            const et = params.createEndTime.unix();
+            queryParams.set('createEndTime', et.toString());
         }
         if (params.title) {
             queryParams.set('title', params.title);

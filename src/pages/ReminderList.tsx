@@ -13,21 +13,19 @@ import {
     UpdateReminderApi,
 } from '../apis/reminders';
 import { useFormHelper } from '../utils/form';
-import DatePicker from 'react-datepicker';
 import { Pagination } from '../components/common/Pagination';
 import ComponentUpsertReminderForm from '../components/reminders/UpsertReminderForm';
 import { EnumLocalStorageKey } from '../consts/localStorage';
 import dayjs from 'dayjs';
-import { Button, Card, Col, Layout, Modal, Row } from 'antd';
+import { Button, Card, Col, Collapse, DatePicker, Form, Input, Layout, Modal, Row, Select } from 'antd';
+import { FormInstance, useForm, useWatch } from 'antd/es/form/Form';
+const { RangePicker } = DatePicker;
 
 export default function ReminderList() {
     const userId = localStorage.getItem(EnumLocalStorageKey.LineID)!;
     // 搜尋
-    let { form: searchForm, setField: setSearchField } =
-        useFormHelper<ReqGetReminderListBody>({
-            userId,
-            pageSize: 10,
-        });
+    const [searchForm] = useForm<ReqGetReminderListBody>();
+    const page = useWatch('page', searchForm)
     const [reminderStates, setReminder] = useState<ReminderBody[]>([]);
     const [reminderCounts, setReminderCounts] = useState(0);
     // 刪除
@@ -40,9 +38,8 @@ export default function ReminderList() {
     const [reload, setReload] = useState<number>(0);
 
     const fetchReminders = async () => {
-        try {
-            searchForm.userId = userId;
-            const resp = await GetUserReminders(searchForm);
+        try {            
+            const resp = await GetUserReminders(userId, searchForm.getFieldsValue());
             setReminder(resp?.data?.records ?? []);
             setReminderCounts(resp?.data?.counts ?? 0);
         } catch (err) {
@@ -53,7 +50,7 @@ export default function ReminderList() {
     // 初始化資料
     useEffect(() => {
         fetchReminders();
-    }, [reload, searchForm.page]);
+    }, [reload, page]);
 
     // 刪除Reminder
     const deleteReminder = async () => {
@@ -75,9 +72,8 @@ export default function ReminderList() {
             alignItems: 'center',
         }}>
             <ReminderSearch
-                onSearch={fetchReminders}
                 form={searchForm}
-                setField={setSearchField}
+                onSearch={fetchReminders}
             />
             <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }} >
                 {reminderStates.map((r, idx) => (
@@ -141,7 +137,7 @@ export default function ReminderList() {
                     open={showUpdateModal}
                     onCancel={() => setShowUpdateModal(false)}
                     footer={null}
-                    >
+                >
                     <UpdateReminderModalForm
                         setModal={setShowUpdateModal}
                         setReload={setReload}
@@ -151,133 +147,99 @@ export default function ReminderList() {
 
             </Row>
             {/* 分頁元件 */}
-            <Pagination
+            {/* <Pagination
                 currentPage={searchForm.page ?? 1}
                 totalItems={reminderCounts}
                 pageSize={searchForm.pageSize ?? 10}
                 setField={setSearchField}
                 showSizeChanger
                 showTotal
-            />
+            /> */}
         </Layout>
     );
 }
 
 function ReminderSearch({
-    onSearch,
     form,
-    setField,
+    onSearch,
 }: {
-    onSearch: (params: any) => void;
-    form: ReqGetReminderListBody;
-    setField: (key: keyof ReqGetReminderListBody, value: any) => void;
+    form: FormInstance<ReqGetReminderListBody>;
+    onSearch: () => void;
 }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
+    const span = { xs: 24, sm: 12 };
     return (
-        <div className="card-searchbar">
-            {/* 頂部控制區 - 包含標題和按鈕 */}
-            <div className="flex justify-between mb-4">
-                <h3 className="text-lg font-semibold">搜尋條件</h3>
-                <div className="flex gap-2">
-                    <button
-                        className="btn btn-primary w-16"
-                        onClick={() => onSearch(form)}
-                    >
-                        搜尋
-                    </button>
-                    <button
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => setIsCollapsed(!isCollapsed)}
-                        aria-label={isCollapsed ? '展開' : '折疊'}
-                    >
-                        {isCollapsed ? '▼' : '▲'}
-                    </button>
-                </div>
-            </div>
+        <Collapse style={{width: '80%', marginBottom: 20}}>
+        <Collapse.Panel header="搜尋條件" key="1">
 
-            {/* 可折疊的搜尋表單區 */}
-            {!isCollapsed && (
-                <div className="flex justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
-                        <fieldset className="fieldset grid grid-cols-2 gap-3">
-                            <legend className="fieldset-legend">
-                                建立時間
-                            </legend>
-                            <DatePicker
-                                name="createStartTime"
-                                selected={form.createStartTime}
-                                onChange={(date) => {
-                                    if (date) setField('createStartTime', date);
+            <Form
+                layout='vertical'
+                variant={'filled'}
+                form={form}
+                onFinish={onSearch}
+            >
+                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col {...span}>
+                        <Form.Item
+                            label="標題"
+                            name="title"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
+
+                    <Col {...span}>
+                        <Form.Item
+                            label="建立時間"
+                        >
+                            <RangePicker
+                                onChange={(data) => {
+                                    form.setFieldValue('createStartTime', data?.[0]);
+                                    form.setFieldValue('createEndTime', data?.[1]);
                                 }}
-                                className="input input-bordered"
-                                placeholderText="開始"
                             />
-                            <DatePicker
-                                name="createEndTime"
-                                selected={form.createEndTime}
-                                onChange={(date) => {
-                                    if (date) setField('createEndTime', date);
-                                }}
-                                className="input input-bordered"
-                                placeholderText="結束"
-                            />
-                        </fieldset>
+                        </Form.Item>
+                        {/* 給rangePicker設值的隱藏欄位 */}
+                        <Form.Item name="createStartTime" noStyle></Form.Item>
+                        <Form.Item name="createEndTime" noStyle></Form.Item>
+                    </Col>
 
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend">標題</legend>
-                            <input
-                                type="text"
-                                name="title"
-                                value={form.title}
-                                onChange={(e) =>
-                                    setField('title', e.target.value)
-                                }
-                                className="input input-bordered"
-                                placeholder="標題"
-                            />
-                        </fieldset>
+                    <Col {...span}>
+                        <Form.Item
+                            label="內容"
+                            name="content"
+                        >
+                            <Input />
+                        </Form.Item>
+                    </Col>
 
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend">內容</legend>
-                            <input
-                                type="text"
-                                name="content"
-                                value={form.content}
-                                onChange={(e) =>
-                                    setField('content', e.target.value)
-                                }
-                                className="input input-bordered"
-                                placeholder="內容"
-                            />
-                        </fieldset>
-
-                        <fieldset className="fieldset">
-                            <legend className="fieldset-legend">
-                                提醒頻率
-                            </legend>
-                            <select
-                                name="frequency"
-                                value={form.frequency}
-                                onChange={(e) =>
-                                    setField('frequency', e.target.value)
-                                }
-                                className="select select-bordered"
+                    <Col {...span}>
+                        <Form.Item
+                            label="提醒頻率"
+                            name="frequency"
+                        >
+                            <Select<EnumReminderFrequency>
                             >
-                                <option value="">全部</option>
                                 {Object.entries(EnumReminderFrequencyName).map(
                                     ([key, val]) => (
-                                        <option key={key} value={key}>
-                                            {val}
-                                        </option>
+                                        <Select.Option value={key}>{val}</Select.Option>
                                     ),
                                 )}
-                            </select>
-                        </fieldset>
-                    </div>
-                </div>
-            )}
-        </div>
+                            </Select>
+                        </Form.Item>
+                    </Col>
+
+                </Row>
+
+                <Form.Item style={{ textAlign: 'right' }}>
+                    <Button type="primary" htmlType="submit">
+                        送出
+                    </Button>
+                </Form.Item>
+            </Form>
+
+
+        </Collapse.Panel>
+        </Collapse>
     );
 }
 
