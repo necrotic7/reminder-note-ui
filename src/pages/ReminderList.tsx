@@ -17,6 +17,7 @@ import { EnumLocalStorageKey } from '../consts/localStorage';
 import dayjs from 'dayjs';
 import { Button, Card, Col, Collapse, DatePicker, Form, Input, Layout, Modal, Pagination, Row, Select } from 'antd';
 import { FormInstance, useForm, useWatch } from 'antd/es/form/Form';
+import { FormPagination } from '../components/common/Pagination';
 const { RangePicker } = DatePicker;
 
 export default function ReminderList() {
@@ -146,26 +147,10 @@ export default function ReminderList() {
 
             </Row>
             {/* 分頁元件 */}
-            <Form
+            <FormPagination
                 form={searchForm}
-            >
-                <Form.Item name="page" noStyle></Form.Item>
-                <Form.Item name="pageSize" noStyle></Form.Item>
-                <Form.Item>
-                    <Pagination
-                        total={reminderCounts}
-                        current={page || 1}
-                        pageSize={pageSize || 10}
-                        showSizeChanger
-                        onChange={(page, pageSize) => {
-                            searchForm.setFieldsValue({
-                                page,
-                                pageSize,
-                            })
-                        }}
-                    />
-                </Form.Item>
-            </Form>
+                total={reminderCounts}
+            />
         </Layout>
     );
 }
