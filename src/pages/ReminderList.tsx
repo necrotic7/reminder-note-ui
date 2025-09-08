@@ -12,12 +12,10 @@ import {
     GetUserReminders,
     UpdateReminderApi,
 } from '../apis/reminders';
-import { useFormHelper } from '../utils/form';
-import { Pagination } from '../components/common/Pagination';
 import ComponentUpsertReminderForm from '../components/reminders/UpsertReminderForm';
 import { EnumLocalStorageKey } from '../consts/localStorage';
 import dayjs from 'dayjs';
-import { Button, Card, Col, Collapse, DatePicker, Form, Input, Layout, Modal, Row, Select } from 'antd';
+import { Button, Card, Col, Collapse, DatePicker, Form, Input, Layout, Modal, Pagination, Row, Select } from 'antd';
 import { FormInstance, useForm, useWatch } from 'antd/es/form/Form';
 const { RangePicker } = DatePicker;
 
@@ -26,6 +24,7 @@ export default function ReminderList() {
     // 搜尋
     const [searchForm] = useForm<ReqGetReminderListBody>();
     const page = useWatch('page', searchForm)
+    const pageSize = useWatch('pageSize', searchForm)
     const [reminderStates, setReminder] = useState<ReminderBody[]>([]);
     const [reminderCounts, setReminderCounts] = useState(0);
     // 刪除
@@ -38,7 +37,7 @@ export default function ReminderList() {
     const [reload, setReload] = useState<number>(0);
 
     const fetchReminders = async () => {
-        try {            
+        try {
             const resp = await GetUserReminders(userId, searchForm.getFieldsValue());
             setReminder(resp?.data?.records ?? []);
             setReminderCounts(resp?.data?.counts ?? 0);
@@ -50,7 +49,7 @@ export default function ReminderList() {
     // 初始化資料
     useEffect(() => {
         fetchReminders();
-    }, [reload, page]);
+    }, [reload, page, pageSize]);
 
     // 刪除Reminder
     const deleteReminder = async () => {
@@ -147,14 +146,26 @@ export default function ReminderList() {
 
             </Row>
             {/* 分頁元件 */}
-            {/* <Pagination
-                currentPage={searchForm.page ?? 1}
-                totalItems={reminderCounts}
-                pageSize={searchForm.pageSize ?? 10}
-                setField={setSearchField}
-                showSizeChanger
-                showTotal
-            /> */}
+            <Form
+                form={searchForm}
+            >
+                <Form.Item name="page" noStyle></Form.Item>
+                <Form.Item name="pageSize" noStyle></Form.Item>
+                <Form.Item>
+                    <Pagination
+                        total={reminderCounts}
+                        current={page || 1}
+                        pageSize={pageSize || 10}
+                        showSizeChanger
+                        onChange={(page, pageSize) => {
+                            searchForm.setFieldsValue({
+                                page,
+                                pageSize,
+                            })
+                        }}
+                    />
+                </Form.Item>
+            </Form>
         </Layout>
     );
 }
@@ -168,77 +179,76 @@ function ReminderSearch({
 }) {
     const span = { xs: 24, sm: 12 };
     return (
-        <Collapse style={{width: '80%', marginBottom: 20}}>
-        <Collapse.Panel header="搜尋條件" key="1">
+        <Collapse style={{ width: '80%', marginBottom: 20 }}>
+            <Collapse.Panel header="搜尋條件" key="1">
 
-            <Form
-                layout='vertical'
-                variant={'filled'}
-                form={form}
-                onFinish={onSearch}
-            >
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                    <Col {...span}>
-                        <Form.Item
-                            label="標題"
-                            name="title"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-
-                    <Col {...span}>
-                        <Form.Item
-                            label="建立時間"
-                        >
-                            <RangePicker
-                                onChange={(data) => {
-                                    form.setFieldValue('createStartTime', data?.[0]);
-                                    form.setFieldValue('createEndTime', data?.[1]);
-                                }}
-                            />
-                        </Form.Item>
-                        {/* 給rangePicker設值的隱藏欄位 */}
-                        <Form.Item name="createStartTime" noStyle></Form.Item>
-                        <Form.Item name="createEndTime" noStyle></Form.Item>
-                    </Col>
-
-                    <Col {...span}>
-                        <Form.Item
-                            label="內容"
-                            name="content"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-
-                    <Col {...span}>
-                        <Form.Item
-                            label="提醒頻率"
-                            name="frequency"
-                        >
-                            <Select<EnumReminderFrequency>
+                <Form
+                    layout='vertical'
+                    variant={'filled'}
+                    form={form}
+                    onFinish={onSearch}
+                >
+                    <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                        <Col {...span}>
+                            <Form.Item
+                                label="標題"
+                                name="title"
                             >
-                                {Object.entries(EnumReminderFrequencyName).map(
-                                    ([key, val]) => (
-                                        <Select.Option value={key}>{val}</Select.Option>
-                                    ),
-                                )}
-                            </Select>
-                        </Form.Item>
-                    </Col>
+                                <Input />
+                            </Form.Item>
+                        </Col>
 
-                </Row>
+                        <Col {...span}>
+                            <Form.Item
+                                label="建立時間"
+                            >
+                                <RangePicker
+                                    onChange={(data) => {
+                                        form.setFieldValue('createStartTime', data?.[0]);
+                                        form.setFieldValue('createEndTime', data?.[1]);
+                                    }}
+                                />
+                            </Form.Item>
+                            {/* 給rangePicker設值的隱藏欄位 */}
+                            <Form.Item name="createStartTime" noStyle></Form.Item>
+                            <Form.Item name="createEndTime" noStyle></Form.Item>
+                        </Col>
 
-                <Form.Item style={{ textAlign: 'right' }}>
-                    <Button type="primary" htmlType="submit">
-                        送出
-                    </Button>
-                </Form.Item>
-            </Form>
+                        <Col {...span}>
+                            <Form.Item
+                                label="內容"
+                                name="content"
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
 
+                        <Col {...span}>
+                            <Form.Item
+                                label="提醒頻率"
+                                name="frequency"
+                            >
+                                <Select<EnumReminderFrequency>
+                                >
+                                    {Object.entries(EnumReminderFrequencyName).map(
+                                        ([key, val]) => (
+                                            <Select.Option value={key}>{val}</Select.Option>
+                                        ),
+                                    )}
+                                </Select>
+                            </Form.Item>
+                        </Col>
 
-        </Collapse.Panel>
+                    </Row>
+
+                    <Form.Item style={{ textAlign: 'right' }}>
+                        <Button type="primary" htmlType="submit">
+                            送出
+                        </Button>
+                    </Form.Item>
+                </Form>
+
+            </Collapse.Panel>
         </Collapse>
     );
 }
