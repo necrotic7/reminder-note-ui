@@ -40,7 +40,7 @@ export default function CreateReminder() {
         }}>
             <Card
                 title="新增提醒"
-                style={{ margin: 20, width: 500, }}>
+                style={{ margin: 20, width: '80%'}}>
                 <ComponentUpsertReminderForm
                     onSubmit={submit}
                     initialValues={buildInitialValues()}

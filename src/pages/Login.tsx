@@ -20,6 +20,7 @@ function LoginPage() {
                 if (isLoggedIn) {
                     const profile = await liff.getProfile();
                     localStorage.setItem(EnumLocalStorageKey.LineID, profile.userId);
+                    localStorage.setItem(EnumLocalStorageKey.LineDisplayName, profile.displayName);
                     navigate('/');
                 } else {
                     setIsLoading(false);

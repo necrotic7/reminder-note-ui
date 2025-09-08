@@ -24,7 +24,7 @@ function MainLayout() {
     const location = useLocation();
     const screens = Grid.useBreakpoint();
     const isMobile = !screens.md;
-    
+
     const [logoutModal, setLogoutModal] = useState(false);
     const [darkTheme, setDarkTheme] = useState(true);
     const [collapsed, setCollapsed] = useState(false);
@@ -76,6 +76,8 @@ function MainLayout() {
         }
     };
 
+    const username = localStorage.getItem(EnumLocalStorageKey.LineDisplayName);
+
     // 側邊欄內容
     const sidebarContent = (
         <>
@@ -88,9 +90,9 @@ function MainLayout() {
                     alignItems: 'center',
                     fontSize: '14px',
                 }}
-                
+
             >
-                {collapsed ? '' : (<>你好，User<br/>id:{localStorage.getItem(EnumLocalStorageKey.LineID)}</>)}
+                {collapsed ? '' : (<>你好，{username}<br />id:{localStorage.getItem(EnumLocalStorageKey.LineID)}</>)}
             </div>
             <Menu
                 mode="inline"
@@ -118,20 +120,28 @@ function MainLayout() {
                         collapsed={collapsed}
                         onCollapse={(val) => setCollapsed(val)}
                         breakpoint="md"
+                        style={{
+                            position: 'fixed',
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            height: '100vh',
+                            overflow: 'auto', // 側邊欄自己滾動
+                        }}
                     >
                         {sidebarContent}
                     </Sider>
                 )}
 
                 {/* 手機版抽屜式側邊欄 */}
-                { isMobile && (
+                {isMobile && (
                     <Drawer
                         title="選單"
                         placement="left"
                         closable={true}
                         onClose={() => setDrawerVisible(false)}
                         open={drawerVisible}
-                        styles={{body: {padding: 0}}}
+                        styles={{ body: { padding: 0 } }}
                         width={280}
                     >
                         {sidebarContent}
@@ -141,6 +151,7 @@ function MainLayout() {
                 <Layout
                     style={{
                         transition: 'margin-left 0.2s',
+                        marginLeft: isMobile ? 0 : 200,
                     }}
                 >
                     <Header
@@ -187,8 +198,8 @@ function MainLayout() {
                                 alignItems: 'center',
                             }}
                         >
-                            <Button 
-                                onClick={() => setDarkTheme(!darkTheme)} 
+                            <Button
+                                onClick={() => setDarkTheme(!darkTheme)}
                                 icon={<MoonOutlined />}
                                 type={isMobile ? 'text' : 'default'}
                                 size={isMobile ? 'small' : 'middle'}
