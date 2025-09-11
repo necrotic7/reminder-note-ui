@@ -70,11 +70,11 @@ export default function ReminderList() {
     // 填入navigation帶進來的參數
     const location = useLocation();
     useEffect(() => {
-        if (location.state.detail) {
+        if (location?.state?.detail) {
             setUpdateReminder(location.state.detail);
             setShowUpdateModal(true);
         }
-    }, [location.state])
+    }, [location?.state])
     
 
     return (
@@ -260,6 +260,7 @@ function UpdateReminderModalForm({
 }) {
 
     let upsertReminderForm: Partial<UpsertReminderForm> = {};
+    let disabled = false;
     if (updateReminderBody) {
         const { remindTime } = updateReminderBody;
         const now = dayjs();
@@ -273,6 +274,7 @@ function UpdateReminderModalForm({
         if (remindTime.date) {
             fullDate = now.date(remindTime.date);
         }
+        fullDate = now.hour(remindTime.hour).minute(remindTime.minute)
 
         upsertReminderForm = {
             id: updateReminderBody.id,
@@ -294,6 +296,7 @@ function UpdateReminderModalForm({
             setReload((pre) => pre + 1);
         } catch (err) {
             console.log(`更新提醒失敗：`, err);
+            throw err;
         }
     };
 
@@ -301,6 +304,7 @@ function UpdateReminderModalForm({
         <ComponentUpsertReminderForm
             initialValues={upsertReminderForm}
             onSubmit={handleSubmit}
+            disabled={disabled}
         />
     );
 }

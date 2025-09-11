@@ -35,7 +35,7 @@ export async function CreateReminderApi(userId: string, form: UpsertReminderForm
     } catch (err) {
         console.log(err);
         Toast.error(`創建提醒失敗：${err?.response?.data?.message ?? err}`);
-        return false;
+        throw err;
     }
 }
 
@@ -62,7 +62,7 @@ export async function UpdateReminderApi(userId: string, form: UpsertReminderForm
     } catch (err) {
         console.log(err);
         Toast.error(`更新提醒失敗：${err?.response?.data?.message ?? err}`);
-        return false;
+        throw err;
     }
 }
 
@@ -103,6 +103,7 @@ export async function GetUserReminders(userId: string, params: ReqGetReminderLis
     } catch (err) {
         console.log(err);
         Toast.error(`取得提醒失敗：${err?.response?.data?.message ?? err}`);
+        throw err;
     }
 }
 
@@ -114,10 +115,6 @@ export async function DeleteReminder(params: ReqDeleteReminderBody) {
     } catch (err) {
         console.log(err);
         Toast.error(`刪除提醒失敗：${err?.response?.data?.message ?? err}`);
-        return false;
+        throw err;
     }
-}
-
-function safeParseInt(val: any) {
-    return isNaN(parseInt(val)) ? 0 : parseInt(val);
 }

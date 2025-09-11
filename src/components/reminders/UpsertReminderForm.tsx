@@ -6,7 +6,7 @@ import {
 import { DaySelect, WeekdaySelect } from '../common/Date';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
-import { Button, Card, Form, Input, Layout, Select, TimePicker, DatePicker } from 'antd';
+import { Button, Card, Form, Input, Layout, Select, TimePicker, DatePicker, Alert } from 'antd';
 import { FormProps, useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
 
@@ -14,9 +14,13 @@ import { useEffect } from 'react';
 export default function ComponentUpsertReminderForm({
     onSubmit,
     initialValues,
+    disabled,
+    disabledInfo = "編輯已鎖定",
 }: {
-    onSubmit: (val: UpsertReminderForm) => void;
+    onSubmit: (val: UpsertReminderForm) => Promise<any>;
     initialValues?: Partial<UpsertReminderForm>;
+    disabled?: boolean;
+    disabledInfo?: string;
 }) {
     const [form] = useForm<UpsertReminderForm>();
 
@@ -25,13 +29,13 @@ export default function ComponentUpsertReminderForm({
     const currentYearEnd = dayjs().endOf('year');
 
     const onFinish: FormProps<UpsertReminderForm>['onFinish'] = (values) => {
-        onSubmit(values);
-        form.resetFields();
+            onSubmit(values)
+            .then(() => form.resetFields())
+        
     };
 
     useEffect(() => {
         if (initialValues) {
-            console.log('init:', initialValues)
             form.setFieldsValue(initialValues);
         }
     }, [initialValues]);
@@ -45,7 +49,9 @@ export default function ComponentUpsertReminderForm({
                     variant={'filled'}
                     onFinish={onFinish}
                     form={form}
+                    disabled={disabled}
                 >
+                    {disabled && <Alert showIcon type='info' message={disabledInfo} style={{ margin: 5}}/>}
                     <Form.Item name="id" hidden>
                         <Input type="hidden" />
                     </Form.Item>
