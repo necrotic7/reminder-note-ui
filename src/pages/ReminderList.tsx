@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import { Button, Card, Col, Collapse, DatePicker, Form, Input, Layout, Modal, Pagination, Row, Select } from 'antd';
 import { FormInstance, useForm, useWatch } from 'antd/es/form/Form';
 import { FormPagination } from '../components/common/Pagination';
+import { useLocation } from 'react-router-dom';
 const { RangePicker } = DatePicker;
 
 export default function ReminderList() {
@@ -65,6 +66,16 @@ export default function ReminderList() {
             console.error('API Error:', err);
         }
     };
+
+    // 填入navigation帶進來的參數
+    const location = useLocation();
+    useEffect(() => {
+        if (location.state.detail) {
+            setUpdateReminder(location.state.detail);
+            setShowUpdateModal(true);
+        }
+    }, [location.state])
+    
 
     return (
         <Layout style={{

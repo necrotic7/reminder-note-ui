@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { GetUserReminders } from '../apis/reminders';
 import RemindCalendar from '../components/reminders/ReminderCalendar';
-import { DateSelectArg, EventInput } from '@fullcalendar/core/index.js';
+import { DateSelectArg, EventClickArg, EventInput } from '@fullcalendar/core/index.js';
 import { useNavigate } from 'react-router-dom';
 import { EnumReminderFrequency } from '../types/reminders';
 import { EnumLocalStorageKey } from '../consts/localStorage';
@@ -35,6 +35,7 @@ export default function Home() {
                         start: startTime.format('YYYY-MM-DD HH:mm:ss'),
                         end: endTime.format('YYYY-MM-DD HH:mm:ss'),
                         editable: false,
+                        detail: data,
                     };
                 }) ?? [];
             setEvents(events);
@@ -57,7 +58,14 @@ export default function Home() {
         });
     };
 
-    // TODO 當事件被點選時，跳轉到編輯頁
+    // 當事件被點選時，跳轉到編輯頁
+    const onEventClick = (info: EventClickArg) => {
+        navigate('/reminderList', {
+            state: {
+                detail: info.event.extendedProps.detail,
+            }
+        })
+    }
 
     // 正常顯示
     return (
@@ -68,6 +76,7 @@ export default function Home() {
                 onDatesChange={(args) => {
                     fetchRemindersToEvent(args.start, args.end);
                 }}
+                onEventClick={onEventClick}
             />
         </div>
     );
