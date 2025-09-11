@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import ReminderList from './pages/ReminderList';
 import { useEffect } from 'react';
 import { EnumLocalStorageKey } from './consts/localStorage';
+import { ConfigProvider, theme } from 'antd';
 
 function App() {
     useEffect(() => {
@@ -13,6 +14,11 @@ function App() {
     }, []);
 
     return (
+        <ConfigProvider
+            theme={{
+                algorithm: theme.darkAlgorithm,
+            }}
+        >
         <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route element={
@@ -24,6 +30,7 @@ function App() {
                 <Route path="/reminderList" element={<ReminderList />} />
             </Route>
         </Routes>
+        </ConfigProvider>
     );
 }
 

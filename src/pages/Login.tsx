@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { JSX, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import liff from '@line/liff';
 import { EnumLocalStorageKey } from '../consts/localStorage';
+import { Alert, Button, Card, Divider, Flex, Space, Spin } from 'antd';
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -53,105 +54,71 @@ function LoginPage() {
         }
     }, []);
 
-    if (error) {
-        return (
-            <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content text-center">
-                    <div className="max-w-md">
-                        <div className="alert alert-error shadow-lg mb-6">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="stroke-current flex-shrink-0 h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                            <div>
-                                <h3 className="font-bold">發生錯誤！</h3>
-                                <div className="text-xs">{error}</div>
-                            </div>
-                        </div>
-                        <button
-                            className="btn btn-primary btn-wide"
-                            onClick={() => window.location.reload()}
-                        >
-                            重新整理頁面
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    let component: JSX.Element;
 
-    if (isLoading) {
-        return (
-            <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content text-center">
-                    <div className="max-w-md">
-                        <div className="loading loading-spinner loading-lg text-primary mb-4"></div>
-                        <h1 className="text-2xl font-bold text-base-content">
-                            載入中...
-                        </h1>
-                        <p className="py-2 text-base-content/70">
-                            正在初始化 LINE 登入服務
-                        </p>
-                    </div>
-                </div>
-            </div>
+    if (error) {
+        component = (
+            <>
+                <Alert
+                    message="發生錯誤"
+                    description={error}
+                    type="error"
+                    showIcon
+                    style={{ margin: 20 }}
+                />
+                <Button
+                    color='blue'
+                    variant='solid'
+                    onClick={() => window.location.reload()}>
+                    重新整理頁面
+                </Button>
+            </>
+        )
+    } else if (isLoading) {
+        component = (
+           <Space direction="vertical" size="large" align='center' style={{ display: 'flex' }}>
+                <Spin /> 
+                <p>正在初始化 LINE 登入服務</p>
+            </Space>
         );
+    } else {
+        component = (
+            <>
+                <h2 className="text-4xl font-bold">
+                    歡迎使用 提醒助手
+                </h2>
+                <p style={{ color: '#ffffff88' }}>
+                    請使用 LINE 帳號登入以繼續使用服務
+                </p>
+                <Card
+                    style={{ width: '30vw', boxShadow: 'inherit', background: '#272727ff', margin: 10 }}
+                >
+                    <Flex vertical justify='center' align='center' >
+                        <Button
+                            color='cyan'
+                            variant='solid'
+                            onClick={handleLogin}
+                            style={{ width: '20vw', marginBottom: 5 }}
+                        >
+                            LINE 登入
+                        </Button>
+                        <Divider style={{ borderColor: '#ffffff88' }}>
+                            安全快速登入
+                        </Divider>
+                        <p style={{ color: '#ffffff88' }}>
+                            使用 LINE 帳號，無需另外註冊
+                        </p>
+                    </Flex>
+                </Card>
+            </>
+        )
     }
 
     return (
-        <div className="hero min-h-screen bg-base-200">
-            <div className="hero-content text-center">
-                <div className="max-w-md">
-                    <div className="mb-8">
-                        <div className="avatar placeholder mb-4">
-                            <div className="bg-primary text-primary-content rounded-full w-16">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-8 w-8"
-                                    fill="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771z" />
-                                    <path d="M12.012 0C5.389 0 .12 4.183.12 9.333v5.334A9.32 9.32 0 009.428 24h5.168A9.32 9.32 0 0023.904 14.667V9.333C23.904 4.183 18.635 0 12.012 0z" />
-                                </svg>
-                            </div>
-                        </div>
-                        <h2 className="text-4xl font-bold text-base-content mb-2">
-                            歡迎使用 提醒助手
-                        </h2>
-                        <p className="text-base-content/70 mb-6">
-                            請使用 LINE 帳號登入以繼續使用服務
-                        </p>
-                    </div>
-                    <div className="card w-full max-w-sm shadow-xl bg-base-100">
-                        <div className="card-body items-center text-center">
-                            <button
-                                className="btn btn-success btn-wide gap-2"
-                                onClick={handleLogin}
-                            >
-                                LINE 登入
-                            </button>
-                            <div className="divider text-xs text-base-content/50">
-                                安全快速登入
-                            </div>
-                            <p className="text-xs text-base-content/60">
-                                使用 LINE 帳號，無需另外註冊
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+        <Flex vertical justify='center' align='center' style={{ height: '100vh' }}>
+            {component}
+        </Flex>
+    )
 }
 
 export default LoginPage;

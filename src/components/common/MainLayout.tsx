@@ -6,7 +6,6 @@ import {
     SettingOutlined,
     BellOutlined,
     LogoutOutlined,
-    MoonOutlined,
     MenuOutlined,
 } from '@ant-design/icons';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
@@ -26,7 +25,6 @@ function MainLayout() {
     const isMobile = !screens.md;
 
     const [logoutModal, setLogoutModal] = useState(false);
-    const [darkTheme, setDarkTheme] = useState(true);
     const [collapsed, setCollapsed] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
 
@@ -107,11 +105,6 @@ function MainLayout() {
     );
 
     return (
-        <ConfigProvider
-            theme={{
-                algorithm: theme.darkAlgorithm,
-            }}
-        >
             <Layout style={{ minHeight: '100vh' }}>
                 {/* 桌面版側邊欄 */}
                 {!isMobile && (
@@ -198,12 +191,6 @@ function MainLayout() {
                                 alignItems: 'center',
                             }}
                         >
-                            <Button
-                                onClick={() => setDarkTheme(!darkTheme)}
-                                icon={<MoonOutlined />}
-                                type={isMobile ? 'text' : 'default'}
-                                size={isMobile ? 'small' : 'middle'}
-                            />
                             <Dropdown
                                 menu={{
                                     items: [
@@ -271,7 +258,6 @@ function MainLayout() {
                     <p>登出後需要重新登入才能使用應用程式。</p>
                 </Modal>
             </Layout>
-        </ConfigProvider>
     );
 }
 
