@@ -64,7 +64,7 @@ function MainLayout() {
         },
     ];
 
-    const handleMenuClick = (info) => {
+    const handleMenuClick = (info: MenuClickEventHandler) => {
         if (info.key === '/logout') {
             setLogoutModal(true);
         }

@@ -1,16 +1,13 @@
 import { Toast } from '../components/common/Toast';
 import {
-    CreateReminderForm,
     ReqDeleteReminderBody,
     ReqGetReminderListBody,
     ReqCreateReminderBody,
     RespGetRemindersBody,
-    UpdateReminderForm,
     ReqUpdateReminderBody,
     UpsertReminderForm,
     EnumReminderFrequency,
 } from '../types/reminders';
-import { DateToUnix } from '../utils/common';
 import { ReminderNoteApi } from './api';
 
 export async function CreateReminderApi(userId: string, form: UpsertReminderForm) {
@@ -32,7 +29,7 @@ export async function CreateReminderApi(userId: string, form: UpsertReminderForm
         await ReminderNoteApi.post('/reminders', payload);
         Toast.success('創建成功');
         return true;
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         Toast.error(`創建提醒失敗：${err?.response?.data?.message ?? err}`);
         throw err;
@@ -59,7 +56,7 @@ export async function UpdateReminderApi(userId: string, form: UpsertReminderForm
         await ReminderNoteApi.put('/reminders', payload);
         Toast.success('更新成功');
         return true;
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         Toast.error(`更新提醒失敗：${err?.response?.data?.message ?? err}`);
         throw err;
@@ -100,7 +97,7 @@ export async function GetUserReminders(userId: string, params: ReqGetReminderLis
             await ReminderNoteApi.get<RespGetRemindersBody>(endpoint);
 
         return result.data;
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         Toast.error(`取得提醒失敗：${err?.response?.data?.message ?? err}`);
         throw err;
@@ -112,7 +109,7 @@ export async function DeleteReminder(params: ReqDeleteReminderBody) {
         await ReminderNoteApi.delete('/reminders', { data: params });
         Toast.success('刪除成功');
         return true;
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         Toast.error(`刪除提醒失敗：${err?.response?.data?.message ?? err}`);
         throw err;
